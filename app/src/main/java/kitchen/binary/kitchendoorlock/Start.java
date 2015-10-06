@@ -256,6 +256,7 @@ public class Start extends ActionBarActivity {
                 } else {
 		    // Error connecting
                     statusText.setText(R.string.wifi_error);
+		    return false;
                 }
             } else {
 		// Couldn't find doorlock-enabled WiFi
