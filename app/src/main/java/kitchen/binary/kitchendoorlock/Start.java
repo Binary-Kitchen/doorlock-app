@@ -230,9 +230,8 @@ public class Start extends ActionBarActivity {
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration wifiConfig : list) {
                 if (checkSSID(wifiConfig.SSID)) {
-                    wifiManager.disconnect();
-                    wifiManager.enableNetwork(wifiConfig.networkId, true);
-                    return true;
+                    if (wifiManager.enableNetwork(wifiConfig.networkId, true))
+                        return true;
                 }
             }
             statusText.setText(R.string.wrong_wifi);
