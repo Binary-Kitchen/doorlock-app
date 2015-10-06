@@ -13,6 +13,7 @@
     <string name="username">username</string>
     <string name="password">password</string>
 
+    <string name="wifi_error">Error connecting to doorlock-enabled WiFi!</string>
     <string name="wrong_wifi">Wrong Wifi!</string>
     <string name="scan_token">Please scan token!</string>
     <string name="try_lock">Trying to lock...</string>
@@ -21,5 +22,8 @@
     <string name="token_failed">QR scan failed</string>
 
     <string name="about">Binary Kitchen e.V.\nRalf Ramsauer\n</string>
+
+    <string name="ssid_secure">\"secure.binary-kitchen.de\"</string>
+    <string name="ssid_legacy">\"legacy.binary-kitchen.de\"</string>
 
 </resources>
