@@ -209,8 +209,8 @@ public class Start extends ActionBarActivity {
     
     boolean checkSSID(String ssid) {
         return ssid != null
-            && (ssid.contains("legacy.binary-kitchen.de")
-                || ssid.contains("secure.binary-kitchen.de"));
+            && (ssid.eqauls("\"legacy.binary-kitchen.de\"")
+                || ssid.equals("\"secure.binary-kitchen.de\""));
     }
 
     boolean checkState()
