@@ -206,11 +206,19 @@ public class Start extends ActionBarActivity {
         statusText.setText(R.string.try_unlock);
         new PerformActionTask().execute(actionUnlock);
     }
-    
-    boolean checkSSID(String ssid) {
-        return ssid != null
-            && (ssid.eqauls("\"legacy.binary-kitchen.de\"")
-                || ssid.equals("\"secure.binary-kitchen.de\""));
+
+    enum SSID_TYPE { NONE, LEGACY, SECURE };
+
+    SSID_TYPE checkSSID(String ssid) {
+        if (ssid == null) {
+            return SSID_TYPE.NONE;
+        } else if (ssid.eqauls("\"legacy.binary-kitchen.de\"")) {
+            return SSID_TYPE.LEGACY;
+        } else if (ssid.equals("\"secure.binary-kitchen.de\"")) {
+            return SSID_TYPE.SECURE;
+        } else {
+            return SSID_TYPE.NONE;
+        }
     }
 
     boolean checkState()
@@ -223,18 +231,37 @@ public class Start extends ActionBarActivity {
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
-        if (checkSSID(wifiManager.getConnectionInfo().getSSID()))
+        SSID_TYPE currentType = checkSSID(wifiManager.getConnectionInfo().getSSID());
+
+        if (currentType == SSID_TYPE.SECURE)
         {
+            // Already connected to secure.
             return true;
         } else {
+            int foundConfigId;
+            SSID_TYPE foundType = SSID_TYPE.NONE;
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration wifiConfig : list) {
-                if (checkSSID(wifiConfig.SSID) && wifiManager.enableNetwork(wifiConfig.networkId, true))
-                    return true;
+                SSID_TYPE type = checkSSID(wifiConfig.SSID);
+                if (type > foundType) {
+                    foundType = type;
+                    foundConfigId = wifiConfig.networkId;
                 }
             }
-            statusText.setText(R.string.wrong_wifi);
-            return false;
+            if (foundType >= SSID_TYPE.LEGACY && foundType > currentType) {
+                // We found a network
+                if (wifiManager.enableNetwork(foundConfigId, true)) {
+		    // Connection successful
+                    return true;
+                } else {
+		    // Error connecting
+                    statusText.setText(R.string.wifi_error);
+                }
+            } else {
+		// Couldn't find doorlock-enabled WiFi
+                statusText.setText(R.string.wrong_wifi);
+                return false;
+            }
         }
     }
 

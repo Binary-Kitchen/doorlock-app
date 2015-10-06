@@ -13,6 +13,7 @@
     <string name="username">username</string>
     <string name="password">password</string>
 
+    <string name="wifi_error">Error connecting to doorlock-enabled WiFi!</string>
     <string name="wrong_wifi">Wrong Wifi!</string>
     <string name="scan_token">Please scan token!</string>
     <string name="try_lock">Trying to lock...</string>
