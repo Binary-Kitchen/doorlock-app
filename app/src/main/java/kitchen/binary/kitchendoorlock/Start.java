@@ -206,27 +206,38 @@ public class Start extends ActionBarActivity {
         statusText.setText(R.string.try_unlock);
         new PerformActionTask().execute(actionUnlock);
     }
+    
+    boolean checkSSID(String ssid) {
+        return ssid != null
+            && (ssid.contains("legacy.binary-kitchen.de")
+                || ssid.contains("secure.binary-kitchen.de"));
+    }
 
     boolean checkState()
     {
-        if (isConfigured == false)
+        if (!isConfigured)
         {
             statusText.setText(R.string.setup_credentials);
             return false;
         }
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
-        String ssid = wifiInfo.getSSID();
-        if (!ssid.contains("legacy.binary-kitchen.de")
-                && !ssid.contains("secure.binary-kitchen.de"))
+        if (checkSSID(wifiManager.getConnectionInfo().getSSID()))
         {
+            return true;
+        } else {
+            List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+            for (WifiConfiguration wifiConfig : list) {
+                if (checkSSID(wifiConfig.SSID)) {
+                    wifiManager.disconnect();
+                    wifiManager.enableNetwork(wifiConfig.networkId, true);
+                    return true;
+                }
+            }
             statusText.setText(R.string.wrong_wifi);
             return false;
         }
-
-        return true;
     }
 
     public void onScan(View view)
