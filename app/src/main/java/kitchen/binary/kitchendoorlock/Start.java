@@ -229,9 +229,8 @@ public class Start extends ActionBarActivity {
         } else {
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration wifiConfig : list) {
-                if (checkSSID(wifiConfig.SSID)) {
-                    if (wifiManager.enableNetwork(wifiConfig.networkId, true))
-                        return true;
+                if (checkSSID(wifiConfig.SSID) && wifiManager.enableNetwork(wifiConfig.networkId, true))
+                    return true;
                 }
             }
             statusText.setText(R.string.wrong_wifi);
