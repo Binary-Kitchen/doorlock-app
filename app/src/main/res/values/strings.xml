@@ -23,4 +23,7 @@
 
     <string name="about">Binary Kitchen e.V.\nRalf Ramsauer\n</string>
 
+    <string name="ssid_secure">\"secure.binary-kitchen.de\"</string>
+    <string name="ssid_legacy">\"legacy.binary-kitchen.de\"</string>
+
 </resources>

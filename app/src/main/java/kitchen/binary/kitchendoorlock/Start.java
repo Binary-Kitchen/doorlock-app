@@ -212,9 +212,9 @@ public class Start extends ActionBarActivity {
     SSID_TYPE checkSSID(String ssid) {
         if (ssid == null) {
             return SSID_TYPE.NONE;
-        } else if (ssid.eqauls("\"legacy.binary-kitchen.de\"")) {
+        } else if (ssid.eqauls(R.string.ssid_legacy)) {
             return SSID_TYPE.LEGACY;
-        } else if (ssid.equals("\"secure.binary-kitchen.de\"")) {
+        } else if (ssid.equals(R.string.ssid_secure)) {
             return SSID_TYPE.SECURE;
         } else {
             return SSID_TYPE.NONE;
