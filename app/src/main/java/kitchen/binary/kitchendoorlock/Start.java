@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -22,8 +23,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
-public class Start extends ActionBarActivity {
+public class    Start extends ActionBarActivity {
 
     String username, password;
     String token;
@@ -207,6 +209,12 @@ public class Start extends ActionBarActivity {
         new PerformActionTask().execute(actionUnlock);
     }
 
+    boolean checkSSID(String ssid) {
+        return ssid != null
+                && (ssid.contains("legacy.binary-kitchen.de")
+                || ssid.contains("secure.binary-kitchen.de"));
+    }
+
     boolean checkState()
     {
         if (isConfigured == false)
@@ -216,17 +224,21 @@ public class Start extends ActionBarActivity {
         }
 
         WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
-        String ssid = wifiInfo.getSSID();
-        if (!ssid.contains("legacy.binary-kitchen.de")
-                && !ssid.contains("secure.binary-kitchen.de"))
-        {
-            statusText.setText(R.string.wrong_wifi);
-            return false;
+        if ((checkSSID(wifiManager.getConnectionInfo().getSSID()))) {
+            return true;
+        } else {
+            List<WifiConfiguration> wifiList = wifiManager.getConfiguredNetworks();
+            for (WifiConfiguration wifiConfig : wifiList) {
+                if (checkSSID(wifiConfig.SSID)) {
+                    wifiManager.disconnect();
+                    return wifiManager.enableNetwork(wifiConfig.networkId, true);
+                }
+            }
         }
 
-        return true;
+        statusText.setText(R.string.wrong_wifi);
+        return false;
     }
 
     public void onScan(View view)
