@@ -24,6 +24,8 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 public class Start extends ActionBarActivity {
 
@@ -38,7 +40,7 @@ public class Start extends ActionBarActivity {
     final int settingsRequestCode = 1;
 
     final String tokenPrefix = "https://lock.binary.kitchen/";
-    final String serverURI = "https://lock.binary.kitchen:443/";
+    final String serverURI = "https://lock.binary.kitchen:444/";
 
     final String actionLock = "lock";
     final String actionUnlock = "unlock";
@@ -270,7 +272,14 @@ public class Start extends ActionBarActivity {
             {
                 URL url = new URL(serverURI);
 
+                TrustManager tm[] = { new PubKeyManager(getString(R.string.certificatePin)) };
+
+                SSLContext context = SSLContext.getInstance("TLS");
+                context.init(null, tm, null);
+
                 connection = (HttpsURLConnection) url.openConnection();
+                connection.setSSLSocketFactory(context.getSocketFactory());
+
                 connection.setRequestMethod("POST");
 
                 String parameters = postArgCommand + "=" + URLEncoder.encode(action, "UTF-8") + "&"

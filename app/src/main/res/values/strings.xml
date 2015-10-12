@@ -21,5 +21,6 @@
     <string name="token_failed">QR scan failed</string>
 
     <string name="about">Binary Kitchen e.V.\nRalf Ramsauer\n</string>
+    <string name="certificatePin">30819f300d06092a864886f70d010101050003818d0030818902818100d354fba8ef663ca17a8742fd8167bfefac363d28f7b8fe192609bb3409540d695505200171dbf6aaa03fa701758056a4ea5e1383eb75fa4f0c47d756508f2902d3c9a6d139103000ad749ee8c930bb4ddf4e58ff4368a3a0394f5f8eeefbda368c6c545250684b54adca010ed3673c87922bed4d065506e08e075f91d768b73d0203010001</string>
 
 </resources>
