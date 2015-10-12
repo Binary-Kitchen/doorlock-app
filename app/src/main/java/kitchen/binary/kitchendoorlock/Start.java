@@ -60,8 +60,7 @@ public class Start extends ActionBarActivity {
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
 
         if (sharedPref.contains(getString(R.string.username)) == false ||
-                sharedPref.contains(getString(R.string.password)) == false)
-        {
+                sharedPref.contains(getString(R.string.password)) == false) {
             Intent intent = new Intent(this, Settings.class);
             startActivityForResult(intent, settingsRequestCode);
         } else {
@@ -94,9 +93,9 @@ public class Start extends ActionBarActivity {
 
         switch (requestCode) {
             case settingsRequestCode:
-                if (resultCode == RESULT_OK)
-                {
-                    SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
+                if (resultCode == RESULT_OK) {
+                    SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences),
+                                                                        MODE_PRIVATE);
                     username = sharedPref.getString(getString(R.string.username), "");
                     password = sharedPref.getString(getString(R.string.password), "");
                 }
@@ -111,13 +110,11 @@ public class Start extends ActionBarActivity {
             case qrRequestCode:
                 scanFinished = true;
 
-                if (resultCode == RESULT_OK)
-                {
+                if (resultCode == RESULT_OK) {
                     String contents = data.getStringExtra("SCAN_RESULT");
 
                     if (contents.length() == tokenPrefix.length() + 16
-                            && contents.substring(0, tokenPrefix.length()).equals(tokenPrefix))
-                    {
+                            && contents.substring(0, tokenPrefix.length()).equals(tokenPrefix)) {
                         token = contents.substring(tokenPrefix.length());
 
                         if (token.length() != 16 || !token.matches("-?[0-9a-fA-F]+"))
@@ -160,8 +157,7 @@ public class Start extends ActionBarActivity {
 
         Intent intent = null;
 
-        switch (id)
-        {
+        switch (id) {
             case R.id.action_settings:
                 intent = new Intent(this, Settings.class);
                 startActivityForResult(intent, settingsRequestCode);
@@ -178,8 +174,7 @@ public class Start extends ActionBarActivity {
 
     public void onLock(View view)
     {
-        if (checkState() == false)
-        {
+        if (checkState() == false) {
             return;
         } else if (tokenValid == false) {
             statusText.setText(R.string.scan_token);
@@ -195,8 +190,7 @@ public class Start extends ActionBarActivity {
 
     public void onUnlock(View view)
     {
-        if (checkState() == false)
-        {
+        if (checkState() == false) {
             return;
         } else if (tokenValid == false) {
             statusText.setText(R.string.scan_token);
@@ -218,8 +212,7 @@ public class Start extends ActionBarActivity {
 
     boolean checkState()
     {
-        if (isConfigured == false)
-        {
+        if (isConfigured == false) {
             statusText.setText(R.string.setup_credentials);
             return false;
         }
@@ -244,8 +237,7 @@ public class Start extends ActionBarActivity {
 
     public void onScan(View view)
     {
-        if (checkState() == false)
-        {
+        if (checkState() == false) {
             return;
         }
 
@@ -293,7 +285,7 @@ public class Start extends ActionBarActivity {
                         Integer.toString(parameters.getBytes().length));
                 connection.setRequestProperty("Content-Language", "en-US");
 
-                connection.setUseCaches (false);
+                connection.setUseCaches(false);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 
@@ -307,8 +299,7 @@ public class Start extends ActionBarActivity {
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is));
                 String line;
                 StringBuffer response = new StringBuffer();
-                while ((line = rd.readLine()) != null)
-                {
+                while ((line = rd.readLine()) != null) {
                     response.append(line);
                     response.append('\r');
                 }
@@ -334,8 +325,7 @@ public class Start extends ActionBarActivity {
             }
             finally
             {
-                if (connection != null)
-                {
+                if (connection != null) {
                     connection.disconnect();
                 }
             }
@@ -347,8 +337,7 @@ public class Start extends ActionBarActivity {
             statusText.setText(a.message);
 
             MediaPlayer mPlayer = null;
-            switch (a.sound)
-            {
+            switch (a.sound) {
                 case Success:
                     mPlayer = MediaPlayer.create(Start.this, R.raw.input_ok_3_clean);
                     break;
@@ -367,8 +356,7 @@ public class Start extends ActionBarActivity {
 
         String err2str(int code)
         {
-            switch (code)
-            {
+            switch (code) {
                 case 0:
                     return "Success";
                 case 1:
