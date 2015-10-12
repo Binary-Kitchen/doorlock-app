@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,12 +19,13 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-public class    Start extends ActionBarActivity {
+import javax.net.ssl.HttpsURLConnection;
+
+public class Start extends ActionBarActivity {
 
     String username, password;
     String token;
@@ -37,7 +37,8 @@ public class    Start extends ActionBarActivity {
     final int qrRequestCode = 0;
     final int settingsRequestCode = 1;
 
-    final String webServer = "https://lock.binary.kitchen/";
+    final String tokenPrefix = "https://lock.binary.kitchen/";
+    final String serverURI = "https://lock.binary.kitchen:443/";
 
     final String actionLock = "lock";
     final String actionUnlock = "unlock";
@@ -114,10 +115,10 @@ public class    Start extends ActionBarActivity {
                 {
                     String contents = data.getStringExtra("SCAN_RESULT");
 
-                    if (contents.length() == webServer.length() + 16
-                            && contents.substring(0, webServer.length()).equals(webServer))
+                    if (contents.length() == tokenPrefix.length() + 16
+                            && contents.substring(0, tokenPrefix.length()).equals(tokenPrefix))
                     {
-                        token = contents.substring(webServer.length());
+                        token = contents.substring(tokenPrefix.length());
 
                         if (token.length() != 16 || !token.matches("-?[0-9a-fA-F]+"))
                         {
@@ -266,16 +267,18 @@ public class    Start extends ActionBarActivity {
         }
     }
 
-    private class PerformActionTask extends AsyncTask<String, Void, Integer> {
+    private class PerformActionTask extends AsyncTask<String, Void, Answer> {
+
         @Override
-        protected Integer doInBackground(String... urls) {
+        protected Answer doInBackground(String... urls) {
             String action = urls[0];
-            HttpURLConnection connection = null;
+            HttpsURLConnection connection = null;
 
             try
             {
-                URL url = new URL(webServer);
-                connection = (HttpURLConnection) url.openConnection();
+                URL url = new URL(serverURI);
+
+                connection = (HttpsURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
 
                 String parameters = postArgCommand + "=" + URLEncoder.encode(action, "UTF-8") + "&"
@@ -311,11 +314,23 @@ public class    Start extends ActionBarActivity {
                 }
                 rd.close();
 
-                return Integer.parseInt(response.toString().replaceAll("\\r|\\n", ""));
+                Integer errorcode = Integer.parseInt(response.toString().replaceAll("\\r|\\n", ""));
+
+                Answer answer = new Answer();
+                answer.message = err2str(errorcode);
+                answer.sound = Answer.Sound.Fail;
+                if (errorcode == 0 || errorcode == 2) {
+                    answer.sound = Answer.Sound.Success;
+                }
+
+                return answer;
             }
             catch (Exception e)
             {
-                return 1;
+                Answer a = new Answer();
+                a.message = e.toString();
+                a.sound = Answer.Sound.None;
+                return a;
             }
             finally
             {
@@ -327,24 +342,27 @@ public class    Start extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(Integer result)
+        protected void onPostExecute(Answer a)
         {
-            String str = err2str(result);
-            statusText.setText(str);
+            statusText.setText(a.message);
 
             MediaPlayer mPlayer = null;
-            switch (result)
+            switch (a.sound)
             {
-                case 0:
-                case 2:
+                case Success:
                     mPlayer = MediaPlayer.create(Start.this, R.raw.input_ok_3_clean);
                     break;
-                default:
+
+                case Fail:
                     mPlayer = MediaPlayer.create(Start.this, R.raw.alert20);
                     break;
 
+                default:
+                    break;
+
             }
-            mPlayer.start();
+            if (mPlayer != null)
+                mPlayer.start();
         }
 
         String err2str(int code)
