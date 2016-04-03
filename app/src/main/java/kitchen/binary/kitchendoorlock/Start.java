@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -30,16 +31,13 @@ import javax.net.ssl.TrustManager;
 public class Start extends ActionBarActivity {
 
     String username, password;
-    String token;
 
-    boolean tokenValid = false;
     boolean scanFinished = false;
     boolean isConfigured = false;
 
     final int qrRequestCode = 0;
     final int settingsRequestCode = 1;
 
-    final String tokenPrefix = "https://lock.binary.kitchen/";
     final String serverURI = "https://lock.binary.kitchen:444/";
 
     final String actionLock = "lock";
@@ -53,6 +51,7 @@ public class Start extends ActionBarActivity {
 
     TextView statusText;
     Button scanButton;
+    EditText tokenText;
 
     @Override
     protected void onResume()
@@ -86,6 +85,7 @@ public class Start extends ActionBarActivity {
 
         statusText = (TextView) findViewById(R.id.statusText);
         scanButton = (Button) findViewById(R.id.scanButton);
+        tokenText = (EditText) findViewById(R.id.tokenText);
     }
 
     @Override
@@ -113,7 +113,6 @@ public class Start extends ActionBarActivity {
                 scanFinished = true;
 
                 if (resultCode != RESULT_OK) {
-                    tokenValid = false;
                     statusText.setText(R.string.token_failed);
                     return;
                 }
@@ -121,15 +120,15 @@ public class Start extends ActionBarActivity {
                 String contents = data.getStringExtra("SCAN_RESULT");
                 try {
                     URL url = new URL(contents);
-                    token = url.getPath().substring(1);
+                    String token = url.getPath().substring(1);
+                    tokenText.setText(token);
+                    statusText.setText("Found Token!");
                 }
                 catch (Exception e) {
                     statusText.setText(R.string.malformed_url);
                     return;
                 }
 
-                tokenValid = true;
-                statusText.setText("Found Token: " + token);
                 break;
 
             default:
@@ -173,34 +172,28 @@ public class Start extends ActionBarActivity {
 
     public void onLock(View view)
     {
-        if (checkState() == false) {
+        if (checkState() == false)
             return;
-        } else if (tokenValid == false) {
-            statusText.setText(R.string.scan_token);
-            return;
-        }
 
         MediaPlayer mPlayer = MediaPlayer.create(Start.this, R.raw.voy_chime_2);
         mPlayer.start();
 
         statusText.setText(R.string.try_lock);
-        new PerformActionTask().execute(actionLock);
+        String token = tokenText.getText().toString();
+        new PerformActionTask().execute(actionLock, token);
     }
 
     public void onUnlock(View view)
     {
-        if (checkState() == false) {
+        if (checkState() == false)
             return;
-        } else if (tokenValid == false) {
-            statusText.setText(R.string.scan_token);
-            return;
-        }
 
         MediaPlayer mPlayer = MediaPlayer.create(Start.this, R.raw.voy_chime_2);
         mPlayer.start();
 
         statusText.setText(R.string.try_unlock);
-        new PerformActionTask().execute(actionUnlock);
+        String token = tokenText.getText().toString();
+        new PerformActionTask().execute(actionUnlock, token);
     }
 
     boolean checkSSID(String ssid) {
@@ -236,21 +229,17 @@ public class Start extends ActionBarActivity {
 
     public void onScan(View view)
     {
-        if (checkState() == false) {
+        if (checkState() == false)
             return;
-        }
 
-        try
-        {
+        try {
             scanFinished = false;
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
 
             startActivityForResult(intent, qrRequestCode);
-
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
             Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
             startActivity(marketIntent);
@@ -263,10 +252,10 @@ public class Start extends ActionBarActivity {
         @Override
         protected Answer doInBackground(String... urls) {
             String action = urls[0];
+            String token = urls[1];
             HttpsURLConnection connection = null;
 
-            try
-            {
+            try {
                 URL url = new URL(serverURI);
 
                 TrustManager tm[] = { new PubKeyManager(getString(R.string.certificatePin)) };

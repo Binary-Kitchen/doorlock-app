@@ -14,7 +14,6 @@
     <string name="password">password</string>
 
     <string name="wrong_wifi">Wrong Wifi!</string>
-    <string name="scan_token">Please scan token!</string>
     <string name="try_lock">Trying to lock...</string>
     <string name="try_unlock">Trying to unlock...</string>
     <string name="setup_credentials">Please setup your credentials!</string>

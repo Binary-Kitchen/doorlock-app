@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Lock "
-        android:id="@+id/button"
+        android:id="@+id/lockButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Unlock"
-        android:id="@+id/button4"
+        android:id="@+id/unlockButton"
         android:onClick="onUnlock"
-        android:layout_alignTop="@+id/button"
+        android:layout_alignTop="@+id/lockButton"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:textSize="20dp"
@@ -51,5 +51,28 @@
         android:textSize="35dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/statusText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Token"
+            android:id="@+id/tokenLabel"
+            android:layout_weight="0.20" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tokenText"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </RelativeLayout>
