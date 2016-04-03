@@ -119,21 +119,17 @@ public class Start extends ActionBarActivity {
                 }
 
                 String contents = data.getStringExtra("SCAN_RESULT");
-
-                if (contents.length() == tokenPrefix.length() + 16
-                        && contents.substring(0, tokenPrefix.length()).equals(tokenPrefix)) {
-                    token = contents.substring(tokenPrefix.length());
-
-                    if (token.length() != 16 || !token.matches("-?[0-9a-fA-F]+"))
-                    {
-                        statusText.setText("Don't cheat on me...");
-                    } else {
-                        tokenValid = true;
-                        statusText.setText("Found Token: " + token);
-                    }
-                } else {
-                    statusText.setText("WTF did you just scan?");
+                try {
+                    URL url = new URL(contents);
+                    token = url.getPath().substring(1);
                 }
+                catch (Exception e) {
+                    statusText.setText(R.string.malformed_url);
+                    return;
+                }
+
+                tokenValid = true;
+                statusText.setText("Found Token: " + token);
                 break;
 
             default:
