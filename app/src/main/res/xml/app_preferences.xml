@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Settings">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:summaryOff="Sounds disabled"
+            android:summaryOn="Sounds enabled"
+            android:title="Sound" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Credentials">
+
+        <EditTextPreference
+            android:key="username"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"
+            android:title="Username"
+            android:summary="Your Binary-Kitchen username" />
+        <EditTextPreference
+            android:key="password"
+            android:selectAllOnFocus="true"
+            android:inputType="textPassword"
+            android:password="true"
+            android:singleLine="true"
+            android:title="Password"
+            android:summary="The corresponding password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Info">
+        <Preference
+            android:persistent="false"
+            android:selectable="false"
+            android:summary="Binary Kitchen e.V.\nThomas Schmid\nLicensed under GPLv3"
+            android:title="About"/>
+    </PreferenceCategory>
+</PreferenceScreen>

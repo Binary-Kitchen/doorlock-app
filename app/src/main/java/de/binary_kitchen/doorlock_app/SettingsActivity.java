@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
+
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -15,6 +17,11 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.settingsToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settingsFragmentContainer,new AppPreferenceFragment())
+                .commit();
     }
 
     @Override
@@ -24,5 +31,14 @@ public class SettingsActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class AppPreferenceFragment extends PreferenceFragmentCompatDividers {
+
+        @Override
+        public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.app_preferences,rootKey);
+            setDividerPreferences(DIVIDER_DEFAULT);
+        }
     }
 }
