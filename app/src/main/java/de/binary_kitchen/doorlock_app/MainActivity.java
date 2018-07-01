@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusView;
 
     public MainActivity(){
-        api = new DoorlockApi("https://lock.binary.kitchen/");
+        api = new DoorlockApi(Configuration.getBaseUrl());
     }
 
     @Override
