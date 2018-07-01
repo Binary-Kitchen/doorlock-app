@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -14,5 +15,26 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Button
+        android:id="@+id/Unlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onUnlock"
+        android:text="Unlock" />
+
+    <Button
+        android:id="@+id/Lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onLock"
+        android:text="Lock" />
 
 </android.support.v7.widget.LinearLayoutCompat>
