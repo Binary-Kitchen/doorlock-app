@@ -6,7 +6,7 @@ public class Configuration {
 
     public static final String getBaseUrl(){
         if(SIMULATION){
-            return "http://localhost:8080/";
+            return "http://10.0.2.2:8080/";
         }
 
         return "https://lock.binary.kitchen/";

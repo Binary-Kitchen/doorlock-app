@@ -15,4 +15,13 @@ public enum ApiCommand{
     public String toString(){
         return this.value;
     }
+
+    public static ApiCommand fromString(String text){
+        for(ApiCommand e: ApiCommand.values()){
+            if(e.value.equals(text)){
+                return e;
+            }
+        }
+        return null;
+    }
 }
