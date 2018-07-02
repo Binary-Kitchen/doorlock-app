@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
     private DoorlockApi api;
     private TextView statusView;
+    private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
     public MainActivity(){
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         statusView = findViewById(R.id.statusTextView);
-
+        logo = findViewById(R.id.logo);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -201,6 +203,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateStatus(LockState state){
         statusView.setText(state.toString());
+        if(state == LockState.CLOSED){
+            logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_closed);
+        }else{
+            logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_open);
+        }
     }
 
     boolean checkAndRequestLocationService(){
