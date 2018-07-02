@@ -2,19 +2,25 @@ package de.binary_kitchen.doorlock_app;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,6 +47,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
     private DoorlockApi api;
     private TextView statusView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
     public MainActivity(){
         api = new DoorlockApi(Configuration.getBaseUrl());
@@ -56,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
         statusView = findViewById(R.id.statusTextView);
 
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                checkPreconditions();
+                getStatus();
+            }
+        });
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         checkPreconditions();
         getStatus();
@@ -126,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFailure(Call call, IOException e) {
              Log.d("RESPONSE_ERROR", e.toString());
+             if(swipeRefreshLayout.isRefreshing()){
+                 swipeRefreshLayout.setRefreshing(false);
+             }
         }
 
         @Override
@@ -144,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             updateStatus(resp.getStatus());
+                            if(swipeRefreshLayout.isRefreshing())
+                                swipeRefreshLayout.setRefreshing(false);
                         }
                     });
                 }
@@ -157,17 +177,15 @@ public class MainActivity extends AppCompatActivity {
                         }else{
                             MediaPlayer.create(context,R.raw.voy_chime_2).start();
                         }
+                        Runnable toast = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, resp.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        };
+                        mainHandler.post(toast);
                     }
                 }
-
-                Runnable toast = new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, resp.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                };
-
-                mainHandler.post(toast);
             }
         }
     }
@@ -178,13 +196,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void checkPreconditions(){
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        String ssid = wifiManager.getConnectionInfo().getSSID();
         if(checkAndRequestSSIDAccess()){
-            WifiManager wifiManager
-                    = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
             if(!checkSsid(wifiManager.getConnectionInfo().getSSID())){
                 changeToSupportedWifi();
             }
+        } else{
+            onWifiChangeFail();
         }
+    }
+
+    void onWifiChangeFail(){
+        Toast.makeText(this,"Unable to change wifi. Make sure you are on the correct network",Toast.LENGTH_LONG).show();
     }
 
     boolean checkSsid(String ssid){
@@ -215,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
                         0);
                 return false;
             }
+            if(!checkAndRequestLocationService()){
+                return false;
+            }
         }
         return true;
     }
@@ -232,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        onWifiChangeFail();
         return false;
     }
 

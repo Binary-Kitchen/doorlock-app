@@ -1,7 +1,7 @@
 package de.binary_kitchen.doorlock_app;
 
 public class Configuration {
-    public static boolean SIMULATION = true;
+    public static boolean SIMULATION = false;
 
 
     public static final String getBaseUrl(){
