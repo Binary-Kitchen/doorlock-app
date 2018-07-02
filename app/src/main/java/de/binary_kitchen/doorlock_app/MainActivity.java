@@ -76,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
         getStatus();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("RESUME","resume");
+        checkPreconditions();
+        getStatus();
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -195,6 +203,45 @@ public class MainActivity extends AppCompatActivity {
         statusView.setText(state.toString());
     }
 
+    boolean checkAndRequestLocationService(){
+        LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        boolean network_enabled = false;
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder((new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog_Alert)));
+            dialog.setMessage("To read the ssid of wifis the app needs location information.");
+            dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    getApplicationContext().startActivity(myIntent);
+                    //get gps
+                }
+            });
+            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+            dialog.show();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks permissions and location service status to read ssids and change wifi state.
+     * If permissions are not granted, request permissions.
+     */
     void checkPreconditions(){
         WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         String ssid = wifiManager.getConnectionInfo().getSSID();
@@ -208,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void onWifiChangeFail(){
-        Toast.makeText(this,"Unable to change wifi. Make sure you are on the correct network",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,
+                "Unable to change wifi. Make sure you are on the correct network",Toast.LENGTH_LONG).show();
     }
 
     boolean checkSsid(String ssid){
