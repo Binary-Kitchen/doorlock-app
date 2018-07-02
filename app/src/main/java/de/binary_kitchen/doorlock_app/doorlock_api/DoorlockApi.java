@@ -48,7 +48,7 @@ public class DoorlockApi {
                       String user,
                       String password,
                       String target){
-        OkHttpClient client = getUnsafeOkHttpClient();
+        OkHttpClient client = new OkHttpClient();
         client.newCall(buildCommandRequest(command,user,password,target))
                 .enqueue(commandCallback);
     }
