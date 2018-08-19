@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                checkPreconditions();
+                switch_wifi();
                 api.issueCommand(ApiCommand.STATUS);
             }
         });
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         api.issueCommand(ApiCommand.STATUS);
 
-        checkPreconditions();
+        switch_wifi();
     }
 
 
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             case POS_PERM_REQUEST:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    checkPreconditions();
+                    switch_wifi();
                 } else {
                     has_wifi_permissions();
                 }
@@ -241,23 +241,37 @@ public class MainActivity extends AppCompatActivity {
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    void checkPreconditions()
+    void switch_wifi()
     {
-        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-        String ssid = wifiManager.getConnectionInfo().getSSID();
-        if(has_wifi_permissions()){
-            if(!checkSsid(wifiManager.getConnectionInfo().getSSID())){
-                changeToSupportedWifi();
-            }
-        } else{
-            onWifiChangeFail();
-        }
-    }
+        WifiManager wifiManager;
+        String ssid;
 
-    void onWifiChangeFail()
-    {
-        Toast.makeText(this,
-                "Unable to change wifi. Make sure you are on the correct network",Toast.LENGTH_LONG).show();
+        if (!has_wifi_permissions()) {
+            Toast.makeText(this, "Insufficient permissions to change WiFi",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+        ssid = wifiManager.getConnectionInfo().getSSID();
+
+        if (!checkSsid(ssid))
+        {
+            List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
+            if (configuredNetworks != null){
+                for (WifiConfiguration networkConf: configuredNetworks) {
+                    if (checkSsid(networkConf.SSID)){
+                        wifiManager.disconnect();
+                        wifiManager.enableNetwork(networkConf.networkId,true);
+                        return;
+                    }
+                }
+            }
+
+            Toast.makeText(this,
+                    "Couldn't find valid WiFi. Maybe kitchen out of range?",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     boolean checkSsid(String ssid)
@@ -298,24 +312,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    boolean changeToSupportedWifi()
-    {
-        WifiManager wifiManager =
-                (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-        List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-        if(configuredNetworks != null){
-            for(WifiConfiguration networkConf: configuredNetworks){
-                Log.d("SSIDCHECK",networkConf.SSID);
-                if(checkSsid(networkConf.SSID)){
-                    wifiManager.disconnect();
-                    return wifiManager.enableNetwork(networkConf.networkId,true);
-                }
-            }
-        }
-        onWifiChangeFail();
-        return false;
     }
 
     @Override
