@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults)
+    {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch(requestCode) {
@@ -116,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.settings_menu, menu);
         return true;
     }
@@ -134,12 +136,14 @@ public class MainActivity extends AppCompatActivity {
     public class ApiCommandResponseCallback implements Callback
     {
         private Context context;
-        public ApiCommandResponseCallback(Context context){
+        public ApiCommandResponseCallback(Context context)
+        {
             this.context = context;
         }
 
         @Override
-        public void onFailure(Call call, IOException e) {
+        public void onFailure(Call call, IOException e)
+        {
              Log.d("RESPONSE_ERROR", e.toString());
              if(swipeRefreshLayout.isRefreshing()){
                  swipeRefreshLayout.setRefreshing(false);
@@ -147,7 +151,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException {
+        public void onResponse(Call call, Response response) throws IOException
+        {
             Log.d("RESPONSE",response.toString());
             Handler mainHandler = new Handler(context.getMainLooper());
             FormBody requestBody = (FormBody)call.request().body();
@@ -189,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     public void updateStatus(LockState state)
     {
