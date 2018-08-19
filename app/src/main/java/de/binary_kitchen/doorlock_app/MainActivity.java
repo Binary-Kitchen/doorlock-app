@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
+    private Boolean sounds_enabled;
 
     public MainActivity()
     {
@@ -80,13 +81,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume()
     {
+        String username, password;
         super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("username", "");
-        String password = prefs.getString("password", "");
-        api = new DoorlockApi(base_url, username, password, "kitchen");
+        sounds_enabled = prefs.getBoolean("soundsEnabled",true);
+        username = prefs.getString("username", "");
+        password = prefs.getString("password", "");
 
+        api = new DoorlockApi(base_url, username, password, "kitchen");
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         api.issueCommand(ApiCommand.STATUS);
 
@@ -165,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
 
-                if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("soundsEnabled",true)){
+                if(sounds_enabled) {
                     if(issuedCommand == ApiCommand.LOCK || issuedCommand == ApiCommand.UNLOCK){
                         if(resp.getErrorCode() == ApiErrorCode.SUCCESS ||
                                 resp.getErrorCode() == ApiErrorCode.ALREADY_LOCKED ||
