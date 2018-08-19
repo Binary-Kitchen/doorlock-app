@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
 
     boolean checkAndRequestSSIDAccess()
     {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //for versions greater android 8 we need coarse position permissions to get ssid
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -291,10 +291,12 @@ public class MainActivity extends AppCompatActivity {
                         0);
                 return false;
             }
-            if(!checkAndRequestLocationService()){
+
+            if (!checkAndRequestLocationService()) {
                 return false;
             }
         }
+
         return true;
     }
 
