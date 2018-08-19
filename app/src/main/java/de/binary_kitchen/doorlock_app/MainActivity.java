@@ -120,22 +120,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUnlock(View view)
     {
-        unlock();
+        api.issueCommand(ApiCommand.UNLOCK);
     }
 
     public void onLock(View view)
     {
-        lock();
-    }
-
-    public void lock()
-    {
         api.issueCommand(ApiCommand.LOCK);
-    }
-
-    public void unlock()
-    {
-        api.issueCommand(ApiCommand.UNLOCK);
     }
 
     public class ApiCommandResponseCallback implements Callback
