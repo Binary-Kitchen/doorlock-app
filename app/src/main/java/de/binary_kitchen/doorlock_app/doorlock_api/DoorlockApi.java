@@ -17,8 +17,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class DoorlockApi {
-    private final String baseUrl;
     private Callback commandCallback;
+    private final String baseUrl;
 
     public void setCommandCallback(Callback commandCallback) {
         this.commandCallback = commandCallback;
