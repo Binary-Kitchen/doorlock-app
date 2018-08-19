@@ -17,20 +17,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class DoorlockApi {
-    private String baseUrl;
+    private final String baseUrl;
     private Callback commandCallback;
 
     public void setCommandCallback(Callback commandCallback) {
         this.commandCallback = commandCallback;
     }
 
-    public void setBaseUrl(String baseUrl) {
+    public DoorlockApi(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    public DoorlockApi(String baseUrl){
-        setBaseUrl(baseUrl);
-    }
     private Request buildCommandRequest(ApiCommand command, String user, String password, String target){
         RequestBody requestBody = new FormBody.Builder()
                 .add("command", command.toString())
