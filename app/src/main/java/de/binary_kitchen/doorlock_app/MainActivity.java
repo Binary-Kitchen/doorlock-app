@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkPreconditions();
                 } else {
-                    checkAndRequestSSIDAccess();
+                    has_wifi_permissions();
                 }
                 return;
         }
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
     {
         WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         String ssid = wifiManager.getConnectionInfo().getSSID();
-        if(checkAndRequestSSIDAccess()){
+        if(has_wifi_permissions()){
             if(!checkSsid(wifiManager.getConnectionInfo().getSSID())){
                 changeToSupportedWifi();
             }
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                 || "google_sdk".equals(Build.PRODUCT);
     }
 
-    boolean checkAndRequestSSIDAccess()
+    boolean has_wifi_permissions()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //for versions greater android 8 we need coarse position permissions to get ssid
