@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 checkPreconditions();
-                getStatus();
+                api.issueCommand(ApiCommand.STATUS);
             }
         });
     }
@@ -88,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
         api = new DoorlockApi(base_url, username, password, "kitchen");
 
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
+        api.issueCommand(ApiCommand.STATUS);
 
         checkPreconditions();
-        getStatus();
     }
 
 
@@ -136,11 +136,6 @@ public class MainActivity extends AppCompatActivity {
     public void unlock()
     {
         api.issueCommand(ApiCommand.UNLOCK);
-    }
-
-    public void getStatus()
-    {
-        api.issueCommand(ApiCommand.STATUS);
     }
 
     public class ApiCommandResponseCallback implements Callback
