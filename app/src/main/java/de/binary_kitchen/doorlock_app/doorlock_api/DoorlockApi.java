@@ -1,5 +1,7 @@
 package de.binary_kitchen.doorlock_app.doorlock_api;
 
+import android.content.Context;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -21,16 +23,19 @@ public class DoorlockApi {
     private Callback commandCallback;
     private final String baseUrl;
     private final String target;
+    private final Context ctx;
 
     public void setCommandCallback(Callback commandCallback) {
         this.commandCallback = commandCallback;
     }
 
-    public DoorlockApi(String baseUrl, String username, String password, String target) {
+    public DoorlockApi(Context ctx, String baseUrl, String username, String password,
+                       String target) {
         this.baseUrl = baseUrl;
         this.username = username;
         this.password = password;
         this.target = target;
+        this.ctx = ctx;
     }
 
     private Request buildCommandRequest(ApiCommand command, String user, String password, String target){

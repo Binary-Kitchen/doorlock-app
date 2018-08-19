@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
 
-        api = new DoorlockApi(base_url, username, password, "kitchen");
+        api = new DoorlockApi(this, base_url, username, password, "kitchen");
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         api.issueCommand(ApiCommand.STATUS);
 
