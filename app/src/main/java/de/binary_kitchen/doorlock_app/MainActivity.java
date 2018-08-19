@@ -118,11 +118,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onUnlock(View view){
+    public void onUnlock(View view)
+    {
         unlock();
     }
 
-    public void onLock(View view){
+    public void onLock(View view)
+    {
         lock();
     }
 
@@ -141,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         api.issueCommand(ApiCommand.STATUS, "kitchen");
     }
 
-    public class ApiCommandResponseCallback implements Callback{
+    public class ApiCommandResponseCallback implements Callback
+    {
         private Context context;
         public ApiCommandResponseCallback(Context context){
             this.context = context;
@@ -200,7 +203,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void updateStatus(LockState state){
+    public void updateStatus(LockState state)
+    {
         statusView.setText(state.toString());
         if(state == LockState.CLOSED){
             logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_closed);
@@ -209,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    boolean checkAndRequestLocationService(){
+    boolean checkAndRequestLocationService()
+    {
         LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         boolean network_enabled = false;
 
@@ -248,7 +253,8 @@ public class MainActivity extends AppCompatActivity {
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    void checkPreconditions(){
+    void checkPreconditions()
+    {
         WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         String ssid = wifiManager.getConnectionInfo().getSSID();
         if(checkAndRequestSSIDAccess()){
@@ -260,19 +266,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void onWifiChangeFail(){
+    void onWifiChangeFail()
+    {
         Toast.makeText(this,
                 "Unable to change wifi. Make sure you are on the correct network",Toast.LENGTH_LONG).show();
     }
 
-    boolean checkSsid(String ssid){
+    boolean checkSsid(String ssid)
+    {
         return ssid != null
                 && (ssid.equals("\"legacy.binary-kitchen.de\"")
                 || ssid.equals("\"secure.binary-kitchen.de\"")
                 || isEmulator());
     }
 
-    public static boolean isEmulator() {
+    public static boolean isEmulator()
+    {
         return Build.FINGERPRINT.startsWith("generic")
                 || Build.FINGERPRINT.startsWith("unknown")
                 || Build.MODEL.contains("google_sdk")
@@ -283,7 +292,8 @@ public class MainActivity extends AppCompatActivity {
                 || "google_sdk".equals(Build.PRODUCT);
     }
 
-    boolean checkAndRequestSSIDAccess(){
+    boolean checkAndRequestSSIDAccess()
+    {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //for versions greater android 8 we need coarse position permissions to get ssid
             if (ContextCompat.checkSelfPermission(this,
@@ -300,7 +310,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    boolean changeToSupportedWifi(){
+    boolean changeToSupportedWifi()
+    {
         WifiManager wifiManager =
                 (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
@@ -318,7 +329,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         switch(item.getItemId()){
             case R.id.settingsMenuSettingsItem:
                 this.startActivity(new Intent(this, SettingsActivity.class));
