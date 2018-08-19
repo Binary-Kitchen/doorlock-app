@@ -20,15 +20,17 @@ public class DoorlockApi {
     private final String username, password;
     private Callback commandCallback;
     private final String baseUrl;
+    private final String target;
 
     public void setCommandCallback(Callback commandCallback) {
         this.commandCallback = commandCallback;
     }
 
-    public DoorlockApi(String baseUrl, String username, String password) {
+    public DoorlockApi(String baseUrl, String username, String password, String target) {
         this.baseUrl = baseUrl;
         this.username = username;
         this.password = password;
+        this.target = target;
     }
 
     private Request buildCommandRequest(ApiCommand command, String user, String password, String target){
@@ -44,7 +46,7 @@ public class DoorlockApi {
                 .build();
     }
 
-    public void issueCommand(ApiCommand command, String target){
+    public void issueCommand(ApiCommand command){
         OkHttpClient client = new OkHttpClient();
         client.newCall(buildCommandRequest(command, username, password, target))
                 .enqueue(commandCallback);

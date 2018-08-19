@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("username", "");
         String password = prefs.getString("password", "");
-        api = new DoorlockApi(base_url, username, password);
+        api = new DoorlockApi(base_url, username, password, "kitchen");
 
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
 
@@ -130,17 +130,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void lock()
     {
-        api.issueCommand(ApiCommand.LOCK, "kitchen");
+        api.issueCommand(ApiCommand.LOCK);
     }
 
     public void unlock()
     {
-        api.issueCommand(ApiCommand.UNLOCK, "kitchen");
+        api.issueCommand(ApiCommand.UNLOCK);
     }
 
     public void getStatus()
     {
-        api.issueCommand(ApiCommand.STATUS, "kitchen");
+        api.issueCommand(ApiCommand.STATUS);
     }
 
     public class ApiCommandResponseCallback implements Callback
