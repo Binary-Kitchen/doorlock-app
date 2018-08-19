@@ -46,13 +46,15 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+    private final static String base_url = "https://lock.binary.kitchen/";
     private DoorlockApi api;
     private TextView statusView;
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
+
     public MainActivity(){
-        api = new DoorlockApi(Configuration.getBaseUrl());
+        api = new DoorlockApi(base_url);
     }
 
     @Override
