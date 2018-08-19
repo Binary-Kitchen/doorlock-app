@@ -17,6 +17,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class DoorlockApi {
+    private final String username, password;
     private Callback commandCallback;
     private final String baseUrl;
 
@@ -24,8 +25,10 @@ public class DoorlockApi {
         this.commandCallback = commandCallback;
     }
 
-    public DoorlockApi(String baseUrl) {
+    public DoorlockApi(String baseUrl, String username, String password) {
         this.baseUrl = baseUrl;
+        this.username = username;
+        this.password = password;
     }
 
     private Request buildCommandRequest(ApiCommand command, String user, String password, String target){
@@ -41,12 +44,9 @@ public class DoorlockApi {
                 .build();
     }
 
-    public void issueCommand(ApiCommand command,
-                      String user,
-                      String password,
-                      String target){
+    public void issueCommand(ApiCommand command, String target){
         OkHttpClient client = new OkHttpClient();
-        client.newCall(buildCommandRequest(command,user,password,target))
+        client.newCall(buildCommandRequest(command, username, password, target))
                 .enqueue(commandCallback);
     }
 

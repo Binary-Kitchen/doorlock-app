@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
 
-    public MainActivity(){
-        api = new DoorlockApi(base_url);
+    public MainActivity()
+    {
     }
 
     @Override
@@ -75,15 +75,20 @@ public class MainActivity extends AppCompatActivity {
                 getStatus();
             }
         });
-        api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
-        checkPreconditions();
-        getStatus();
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
-        Log.d("RESUME","resume");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = prefs.getString("username", "");
+        String password = prefs.getString("password", "");
+        api = new DoorlockApi(base_url, username, password);
+
+        api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
+
         checkPreconditions();
         getStatus();
     }
@@ -121,27 +126,19 @@ public class MainActivity extends AppCompatActivity {
         lock();
     }
 
-    public void lock(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        api.issueCommand(ApiCommand.LOCK,
-                prefs.getString("username", ""),
-                prefs.getString("password", ""),
-                "kitchen");
+    public void lock()
+    {
+        api.issueCommand(ApiCommand.LOCK, "kitchen");
     }
 
-    public void unlock(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        api.issueCommand(ApiCommand.UNLOCK,
-                prefs.getString("username", ""),
-                prefs.getString("password", ""),
-                "kitchen");
+    public void unlock()
+    {
+        api.issueCommand(ApiCommand.UNLOCK, "kitchen");
     }
-    public void getStatus(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        api.issueCommand(ApiCommand.STATUS,
-                prefs.getString("username", ""),
-                prefs.getString("password", ""),
-                "kitchen");
+
+    public void getStatus()
+    {
+        api.issueCommand(ApiCommand.STATUS, "kitchen");
     }
 
     public class ApiCommandResponseCallback implements Callback{
