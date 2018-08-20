@@ -116,6 +116,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void play(int id)
+    {
+        if (sp != null)
+            sp.play(id, 1, 1, 0, 0, 1);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -125,22 +131,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUnlock(View view)
     {
-        if (sp != null)
-            sp.play(s_req, 1, 1, 0, 0, 1);
+        play(s_req);
         api.unlock();
     }
 
     public void onLock(View view)
     {
-        if (sp != null)
-            sp.play(s_req, 1, 1, 0, 0, 1);
+        play(s_req);
         api.lock();
     }
 
     public void onError(String err)
     {
-        if (sp != null)
-            sp.play(s_alert, 1, 1, 0, 0, 1);
+        play(s_alert);
         Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
 
@@ -172,9 +175,9 @@ public class MainActivity extends AppCompatActivity {
             if (sp != null)
                 if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
                         err == ApiErrorCode.ALREADY_OPEN)
-                    sp.play(s_ok, 1, 1, 0, 0, 1);
+                    play(s_ok);
                 else
-                    sp.play(s_alert, 1, 1, 0, 0, 1);
+                    play(s_alert);
 
             Toast.makeText(this, resp.getMessage(), Toast.LENGTH_SHORT).show();
         }
