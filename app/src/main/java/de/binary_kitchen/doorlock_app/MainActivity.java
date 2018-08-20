@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    void switch_wifi()
+    Boolean switch_wifi()
     {
         WifiManager wifiManager;
         String ssid;
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         if (!has_wifi_permissions()) {
             Toast.makeText(this, "Insufficient permissions to change WiFi",
                     Toast.LENGTH_LONG).show();
-            return;
+            return Boolean.FALSE;
         }
 
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -244,8 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 for (WifiConfiguration networkConf: configuredNetworks) {
                     if (checkSsid(networkConf.SSID)){
                         wifiManager.disconnect();
-                        wifiManager.enableNetwork(networkConf.networkId,true);
-                        return;
+                        return wifiManager.enableNetwork(networkConf.networkId,true);
                     }
                 }
             }
@@ -254,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
                     "Couldn't find valid WiFi. Maybe kitchen out of range?",
                     Toast.LENGTH_LONG).show();
         }
+
+        return Boolean.FALSE;
     }
 
     boolean checkSsid(String ssid)
