@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 switch_wifi();
-                api.issueCommand(ApiCommand.STATUS);
+                api.status();
             }
         });
     }
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
-        api.issueCommand(ApiCommand.STATUS);
+        api.status();
 
         switch_wifi();
     }
@@ -125,12 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUnlock(View view)
     {
-        api.issueCommand(ApiCommand.UNLOCK);
+        api.unlock();
     }
 
     public void onLock(View view)
     {
-        api.issueCommand(ApiCommand.LOCK);
+        api.lock();
     }
 
     public class ApiCommandResponseCallback implements Callback

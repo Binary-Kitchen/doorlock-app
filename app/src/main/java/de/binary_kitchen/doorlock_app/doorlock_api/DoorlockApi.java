@@ -44,7 +44,7 @@ public class DoorlockApi {
         this.ctx = ctx;
     }
 
-    public void issueCommand(ApiCommand command){
+    private void issueCommand(ApiCommand command){
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("command", command.toString())
@@ -55,5 +55,20 @@ public class DoorlockApi {
         Request request = request_uri.post(requestBody).build();
 
         client.newCall(request).enqueue(commandCallback);
+    }
+
+    public void unlock()
+    {
+        issueCommand(ApiCommand.UNLOCK);
+    }
+
+    public void lock()
+    {
+        issueCommand(ApiCommand.LOCK);
+    }
+
+    public void status()
+    {
+        issueCommand(ApiCommand.STATUS);
     }
 }
