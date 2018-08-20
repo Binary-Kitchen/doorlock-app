@@ -276,6 +276,9 @@ public class MainActivity extends AppCompatActivity {
                     /* TBD: this will return true, but we're actually not connected yet.
                        We should listen on NETWORK_STATE_CHANGE_ACTION */
                     if (wifiManager.enableNetwork(networkConf.networkId,true)) {
+                        /* TBD: HACK! This can be removed if we asynchronously wait for WiFi */
+                        Toast.makeText(this, "Waiting for WiFi to settle down…",
+                                Toast.LENGTH_LONG).show();
                         success = Boolean.TRUE;
                         break;
                     }
