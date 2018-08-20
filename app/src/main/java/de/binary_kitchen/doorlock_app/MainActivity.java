@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                switch_wifi();
-                api.status();
+                if (switch_wifi())
+                    api.status();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -91,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
         password = prefs.getString("password", "");
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
-        api.status();
 
-        switch_wifi();
+        if (switch_wifi())
+            api.status();
     }
 
 
@@ -129,21 +129,32 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void state_unknown()
+    {
+        logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border);
+        statusView.setText("");
+    }
+
     public void onUnlock(View view)
     {
-        play(s_req);
-        api.unlock();
+        if (switch_wifi()) {
+            play(s_req);
+            api.unlock();
+        }
     }
 
     public void onLock(View view)
     {
-        play(s_req);
-        api.lock();
+        if (switch_wifi()) {
+            play(s_req);
+            api.lock();
+        }
     }
 
     public void onError(String err)
     {
         play(s_alert);
+        state_unknown();
         Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
 
@@ -159,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
             msg = err.toString() + ": " + resp.getMessage();
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            state_unknown();
 
             return;
         }
@@ -219,42 +231,57 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private Boolean switch_wifi()
+    {
+        Boolean succ;
+
+        succ = __switch_wifi();
+        if (!succ)
+            state_unknown();
+
+        return succ;
+    }
+
     /**
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    Boolean switch_wifi()
+    private Boolean __switch_wifi()
     {
         WifiManager wifiManager;
         String ssid;
+        Boolean success = Boolean.FALSE;
 
         if (!has_wifi_permissions()) {
             Toast.makeText(this, "Insufficient permissions to change WiFi",
                     Toast.LENGTH_LONG).show();
-            return Boolean.FALSE;
+            return success;
         }
 
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         ssid = wifiManager.getConnectionInfo().getSSID();
 
-        if (!checkSsid(ssid))
-        {
-            List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-            if (configuredNetworks != null){
-                for (WifiConfiguration networkConf: configuredNetworks) {
-                    if (checkSsid(networkConf.SSID)){
-                        wifiManager.disconnect();
-                        return wifiManager.enableNetwork(networkConf.networkId,true);
+        if (checkSsid(ssid))
+            return Boolean.TRUE;
+
+        List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
+        if (configuredNetworks != null){
+            for (WifiConfiguration networkConf: configuredNetworks) {
+                if (checkSsid(networkConf.SSID)){
+                    wifiManager.disconnect();
+                    if (wifiManager.enableNetwork(networkConf.networkId,true)) {
+                        success = Boolean.TRUE;
+                        break;
                     }
                 }
             }
-
-            Toast.makeText(this,
-                    "Couldn't find valid WiFi. Maybe kitchen out of range?",
-                    Toast.LENGTH_LONG).show();
         }
 
-        return Boolean.FALSE;
+        if (!success)
+            Toast.makeText(this,
+                    "Couldn't find valid WiFi. Maybe kitchen out of range or WiFi disabled?",
+                    Toast.LENGTH_LONG).show();
+        return success;
     }
 
     boolean checkSsid(String ssid)
