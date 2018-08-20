@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -22,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,9 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.util.List;
 
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiCommand;
@@ -40,10 +36,6 @@ import de.binary_kitchen.doorlock_app.doorlock_api.ApiErrorCode;
 import de.binary_kitchen.doorlock_app.doorlock_api.DoorlockApi;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiResponse;
 import de.binary_kitchen.doorlock_app.doorlock_api.LockState;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     private final static String doorlock_fqdn = "lock.binary.kitchen";
@@ -52,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
-    private Boolean sounds_enabled;
+    private SoundPool sp;
+
+    private int s_ok, s_req, s_alert;
 
     public MainActivity()
     {
@@ -74,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
                 switch_wifi();
                 api.status();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -85,12 +80,17 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        sounds_enabled = prefs.getBoolean("soundsEnabled",true);
+        if (prefs.getBoolean("soundsEnabled",true)) {
+            sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+            s_req = sp.load(this, R.raw.voy_chime_2, 1);
+            s_alert = sp.load(this, R.raw.alert20, 1);
+            s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
+        }
+
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
-        api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         api.status();
 
         switch_wifi();
@@ -125,83 +125,51 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUnlock(View view)
     {
+        if (sp != null)
+            sp.play(s_req, 1, 1, 0, 0, 1);
         api.unlock();
     }
 
     public void onLock(View view)
     {
+        if (sp != null)
+            sp.play(s_req, 1, 1, 0, 0, 1);
         api.lock();
     }
 
-    public class ApiCommandResponseCallback implements Callback
+    public void updateStatus(ApiCommand issued_command, ApiResponse resp)
     {
-        private Context context;
-        public ApiCommandResponseCallback(Context context)
-        {
-            this.context = context;
+        LockState state;
+        ApiErrorCode err;
+
+        err = resp.getErrorCode();
+        if (err == ApiErrorCode.PERMISSION_DENIED || err == ApiErrorCode.INVALID ||
+                err == ApiErrorCode.LDAP_ERROR) {
+            String msg;
+
+            msg = err.toString() + ": " + resp.getMessage();
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+            return;
         }
 
-        @Override
-        public void onFailure(Call call, IOException e)
-        {
-             Log.d("RESPONSE_ERROR", e.toString());
-             if(swipeRefreshLayout.isRefreshing()){
-                 swipeRefreshLayout.setRefreshing(false);
-             }
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException
-        {
-            Log.d("RESPONSE",response.toString());
-            Handler mainHandler = new Handler(context.getMainLooper());
-            FormBody requestBody = (FormBody)call.request().body();
-            ApiCommand issuedCommand = ApiCommand.fromString(requestBody.value(0));
-
-            Log.d("ISSUEDCOMMAND",issuedCommand.toString());
-
-            if(response.code() == 200){
-                final ApiResponse resp = new Gson().fromJson(response.body().string(),ApiResponse.class);
-                if(resp.getErrorCode() == ApiErrorCode.SUCCESS){
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateStatus(resp.getStatus());
-                            if(swipeRefreshLayout.isRefreshing())
-                                swipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
-
-                if(sounds_enabled) {
-                    if(issuedCommand == ApiCommand.LOCK || issuedCommand == ApiCommand.UNLOCK){
-                        if(resp.getErrorCode() == ApiErrorCode.SUCCESS ||
-                                resp.getErrorCode() == ApiErrorCode.ALREADY_LOCKED ||
-                                resp.getErrorCode() == ApiErrorCode.ALREADY_OPEN){
-                            MediaPlayer.create(context,R.raw.input_ok_3_clean).start();
-                        }else{
-                            MediaPlayer.create(context,R.raw.voy_chime_2).start();
-                        }
-                        Runnable toast = new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, resp.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        };
-                        mainHandler.post(toast);
-                    }
-                }
-            }
-        }
-    }
-
-    public void updateStatus(LockState state)
-    {
+        state = resp.getStatus();
         statusView.setText(state.toString());
-        if(state == LockState.CLOSED){
+
+        if (state == LockState.CLOSED)
             logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_closed);
-        }else{
+        else
             logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_open);
+
+        if (issued_command != ApiCommand.STATUS) {
+            if (sp != null)
+                if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
+                        err == ApiErrorCode.ALREADY_OPEN)
+                    sp.play(s_ok, 1, 1, 0, 0, 1);
+                else
+                    sp.play(s_alert, 1, 1, 0, 0, 1);
+
+            Toast.makeText(this, resp.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
