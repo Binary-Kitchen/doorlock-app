@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
             s_req = sp.load(this, R.raw.voy_chime_2, 1);
             s_alert = sp.load(this, R.raw.alert20, 1);
             s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
+        } else {
+            if (sp != null)
+                sp.release();
+            sp = null;
         }
 
         username = prefs.getString("username", "");
