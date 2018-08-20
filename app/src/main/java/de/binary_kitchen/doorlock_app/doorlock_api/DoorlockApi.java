@@ -3,16 +3,6 @@ package de.binary_kitchen.doorlock_app.doorlock_api;
 import android.content.Context;
 import android.net.Uri;
 
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
