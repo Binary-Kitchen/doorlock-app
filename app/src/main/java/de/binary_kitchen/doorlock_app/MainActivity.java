@@ -46,7 +46,7 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    private final static String base_url = "https://lock.binary.kitchen/";
+    private final static String doorlock_fqdn = "lock.binary.kitchen";
     private DoorlockApi api;
     private TextView statusView;
     private ImageView logo;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
 
-        api = new DoorlockApi(this, base_url, username, password, "kitchen");
+        api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
         api.setCommandCallback(new ApiCommandResponseCallback(getApplicationContext()));
         api.issueCommand(ApiCommand.STATUS);
 

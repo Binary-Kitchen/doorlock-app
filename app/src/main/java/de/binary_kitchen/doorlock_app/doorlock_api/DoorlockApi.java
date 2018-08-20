@@ -1,6 +1,7 @@
 package de.binary_kitchen.doorlock_app.doorlock_api;
 
 import android.content.Context;
+import android.net.Uri;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -21,7 +22,7 @@ import okhttp3.RequestBody;
 public class DoorlockApi {
     private final String username, password;
     private Callback commandCallback;
-    private final String baseUrl;
+    private final Request.Builder request_uri;
     private final String target;
     private final Context ctx;
 
@@ -29,9 +30,14 @@ public class DoorlockApi {
         this.commandCallback = commandCallback;
     }
 
-    public DoorlockApi(Context ctx, String baseUrl, String username, String password,
-                       String target) {
-        this.baseUrl = baseUrl;
+    public DoorlockApi(Context ctx, String fqdn, String username, String password,
+                       String target)
+    {
+        Uri.Builder builder = new Uri.Builder();
+
+        builder.scheme("https").authority(fqdn).appendPath("api");
+
+        this.request_uri = new Request.Builder().url(builder.build().toString());
         this.username = username;
         this.password = password;
         this.target = target;
@@ -46,7 +52,7 @@ public class DoorlockApi {
                 .add("user", username)
                 .add("pass", password)
                 .build();
-        Request request = new Request.Builder().url(baseUrl + "api").post(requestBody).build();
+        Request request = request_uri.post(requestBody).build();
 
         client.newCall(request).enqueue(commandCallback);
     }
