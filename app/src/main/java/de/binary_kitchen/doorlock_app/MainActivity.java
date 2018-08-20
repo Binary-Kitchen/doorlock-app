@@ -261,14 +261,16 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         ssid = wifiManager.getConnectionInfo().getSSID();
 
-        if (checkSsid(ssid))
+        if (is_ssid_valid(ssid))
             return Boolean.TRUE;
 
         List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
         if (configuredNetworks != null){
             for (WifiConfiguration networkConf: configuredNetworks) {
-                if (checkSsid(networkConf.SSID)){
+                if (is_ssid_valid(networkConf.SSID)){
                     wifiManager.disconnect();
+                    /* TBD: this will return true, but we're actually not connected yet.
+                       We should listen on NETWORK_STATE_CHANGE_ACTION */
                     if (wifiManager.enableNetwork(networkConf.networkId,true)) {
                         success = Boolean.TRUE;
                         break;
@@ -284,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         return success;
     }
 
-    boolean checkSsid(String ssid)
+    boolean is_ssid_valid(String ssid)
     {
         return ssid != null
                 && (ssid.equals("\"legacy.binary-kitchen.de\"")
