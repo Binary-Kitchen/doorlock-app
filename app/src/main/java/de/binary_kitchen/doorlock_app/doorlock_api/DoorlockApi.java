@@ -10,9 +10,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class DoorlockApi {
+    private final Request.Builder request_uri;
     private final String username, password;
     private Callback commandCallback;
-    private final Request.Builder request_uri;
+    private OkHttpClient client;
     private final String target;
     private final Context ctx;
 
@@ -32,10 +33,11 @@ public class DoorlockApi {
         this.password = password;
         this.target = target;
         this.ctx = ctx;
+        this.client = new OkHttpClient();
+
     }
 
     private void issueCommand(ApiCommand command){
-        OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("command", command.toString())
                 .add("target", target)
