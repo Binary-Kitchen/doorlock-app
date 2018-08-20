@@ -76,8 +76,18 @@ public class DoorlockApi {
         }
 
         @Override
-        public void onFailure(Call call, IOException e)
+        public void onFailure(Call call, final IOException e)
         {
+            Handler handler;
+
+            handler = new Handler(context.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity act = (MainActivity) context;
+                    act.onError(e.toString());
+                }
+            });
         }
 
         @Override
@@ -104,7 +114,7 @@ public class DoorlockApi {
                 @Override
                 public void run() {
                     MainActivity act = (MainActivity) context;
-                    act.updateStatus(issuedCommand, resp);
+                    act.onUpdateStatus(issuedCommand, resp);
                 }
             });
         }

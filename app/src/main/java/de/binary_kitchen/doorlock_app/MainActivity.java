@@ -137,7 +137,14 @@ public class MainActivity extends AppCompatActivity {
         api.lock();
     }
 
-    public void updateStatus(ApiCommand issued_command, ApiResponse resp)
+    public void onError(String err)
+    {
+        if (sp != null)
+            sp.play(s_alert, 1, 1, 0, 0, 1);
+        Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onUpdateStatus(ApiCommand issued_command, ApiResponse resp)
     {
         LockState state;
         ApiErrorCode err;
