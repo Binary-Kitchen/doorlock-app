@@ -39,13 +39,13 @@ import de.binary_kitchen.doorlock_app.doorlock_api.LockState;
 
 public class MainActivity extends AppCompatActivity {
     private final static String doorlock_fqdn = "lock.binary.kitchen";
+    private boolean do_wifi_switch;
     private DoorlockApi api;
     private TextView statusView;
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
     private SoundPool sp;
-
     private int s_ok, s_req, s_alert;
 
     public MainActivity()
@@ -97,8 +97,63 @@ public class MainActivity extends AppCompatActivity {
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
 
-        if (switch_wifi())
-            api.status();
+        do_wifi_switch = false;
+        if (prefs.getBoolean("wifiSwitchEnabled", false)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                //for versions greater android 8 we need coarse position permissions to get ssid
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED)
+                    do_wifi_switch = true;
+                else
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+            }
+
+            /*
+            LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+            boolean network_enabled = false;
+
+            try {
+                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            } catch(Exception ex) {
+                Log.d("EXception", ex.toString());
+            }
+
+            if(!network_enabled) {
+                // notify user
+                AlertDialog.Builder dialog = new AlertDialog.Builder((new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog_Alert)));
+                dialog.setMessage("To read the ssid of wifis the app needs location information.");
+                dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        // TODO Auto-generated method stub
+                        Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        getApplicationContext().startActivity(myIntent);
+                        //get gps
+                    }
+                });
+                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+                dialog.show();
+                //return false;
+            }
+            //return true;
+            */
+        }
+
+        api.status();
+
+
+        /*if (!do_wifi_switch) {
+            Toast.makeText(this, "Insufficient permissions to change WiFi",
+                    Toast.LENGTH_LONG).show();
+        }*/
     }
 
 
@@ -109,15 +164,39 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        final Context ctx = this;
+        final SharedPreferences prefs;
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+
         switch(requestCode) {
             case POS_PERM_REQUEST:
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    switch_wifi();
-                } else {
-                    has_wifi_permissions();
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    do_wifi_switch = true;
+                else {
+                    AlertDialog.Builder dialog;
+                    prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
+
+                    dialog = new AlertDialog.Builder(new ContextThemeWrapper(
+                            this, R.style.Theme_AppCompat_Light_Dialog_Alert));
+                    dialog.setMessage(
+                            "To read the SSID of WiFis the app needs location information.");
+                    dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            getApplicationContext().startActivity(myIntent);
+                        }
+                    });
+                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
+                        }
+                    });
+
+                    dialog.show();
                 }
-                return;
         }
     }
 
@@ -200,42 +279,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    boolean checkAndRequestLocationService()
-    {
-        LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        boolean network_enabled = false;
-
-        try {
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
-
-        if(!network_enabled) {
-            // notify user
-            AlertDialog.Builder dialog = new AlertDialog.Builder((new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog_Alert)));
-            dialog.setMessage("To read the ssid of wifis the app needs location information.");
-            dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    getApplicationContext().startActivity(myIntent);
-                    //get gps
-                }
-            });
-            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-
-                }
-            });
-            dialog.show();
-            return false;
-        }
-        return true;
-    }
-
     private Boolean switch_wifi()
     {
         Boolean succ;
@@ -256,12 +299,6 @@ public class MainActivity extends AppCompatActivity {
         WifiManager wifiManager;
         String ssid;
         Boolean success = Boolean.FALSE;
-
-        if (!has_wifi_permissions()) {
-            Toast.makeText(this, "Insufficient permissions to change WiFi",
-                    Toast.LENGTH_LONG).show();
-            return success;
-        }
 
         wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
         ssid = wifiManager.getConnectionInfo().getSSID();
@@ -299,26 +336,6 @@ public class MainActivity extends AppCompatActivity {
         return ssid != null
                 && (ssid.equals("\"legacy.binary-kitchen.de\"")
                 || ssid.equals("\"secure.binary-kitchen.de\""));
-    }
-
-    boolean has_wifi_permissions()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //for versions greater android 8 we need coarse position permissions to get ssid
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0);
-                return false;
-            }
-
-            if (!checkAndRequestLocationService()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     @Override
