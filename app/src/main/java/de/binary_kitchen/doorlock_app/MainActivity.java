@@ -8,13 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -124,10 +122,18 @@ public class MainActivity extends AppCompatActivity {
                 //for versions greater android 8 we need coarse position permissions to get ssid
                 if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED)
+                        == PackageManager.PERMISSION_GRANTED) {
                     do_wifi_switch = true;
-                else
+                    if (broadcastReceiver != null)
+                        unregisterReceiver(broadcastReceiver);
+
+                    broadcastReceiver = new WifiReceiver();
+                    IntentFilter intentFilter = new IntentFilter();
+                    intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+                    registerReceiver(broadcastReceiver, intentFilter);
+                } else {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+                }
             }
         } else {
             connectivity = true;
@@ -136,6 +142,16 @@ public class MainActivity extends AppCompatActivity {
         update_status();
     }
 
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -229,8 +245,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void update_status()
     {
-        if (!connectivity && do_wifi_switch)
-            switch_wifi();
+        if (!do_wifi_switch && broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
+
+        if (!connectivity && do_wifi_switch) {
+            if (!switch_wifi())
+                state_unknown();
+        }
 
         if (connectivity)
             api.issueCommand(ApiCommand.STATUS);
@@ -275,31 +298,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Boolean switch_wifi()
-    {
-        Boolean succ;
-
-        /* TBD: this will return true, but we're actually not connected yet.
-           We should listen on NETWORK_STATE_CHANGE_ACTION */
-        if (broadcastReceiver == null)
-            broadcastReceiver = new WifiReceiver();
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        registerReceiver(broadcastReceiver, intentFilter);
-
-        succ = __switch_wifi();
-        if (!succ)
-            state_unknown();
-
-        return succ;
-    }
-
     /**
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    private boolean __switch_wifi() {
+    private boolean switch_wifi() {
         List<WifiConfiguration> configured_networks;
         List<ScanResult> scan_results;
         WifiManager wifiManager;
@@ -316,8 +319,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             /* Are we already connected to some kitchen network? */
             ssid = wifiManager.getConnectionInfo().getSSID();
-            if (is_ssid_valid(ssid))
+            if (is_ssid_valid(ssid)) {
+                connectivity = true;
                 return true;
+            }
             wifiManager.disconnect();
         }
 
