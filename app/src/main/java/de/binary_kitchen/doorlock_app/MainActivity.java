@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private int s_ok, s_req, s_alert;
 
     WifiReceiver broadcastReceiver;
+    IntentFilter intentFilter;
 
     public MainActivity()
     {
@@ -71,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
+
+        broadcastReceiver = new WifiReceiver();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 
         statusView = findViewById(R.id.statusTextView);
         logo = findViewById(R.id.logo);
@@ -124,12 +129,6 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
                     do_wifi_switch = true;
-                    if (broadcastReceiver != null)
-                        unregisterReceiver(broadcastReceiver);
-
-                    broadcastReceiver = new WifiReceiver();
-                    IntentFilter intentFilter = new IntentFilter();
-                    intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
                     registerReceiver(broadcastReceiver, intentFilter);
                 } else {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
@@ -147,10 +146,8 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onPause();
 
-        if (broadcastReceiver != null) {
+        if (broadcastReceiver != null)
             unregisterReceiver(broadcastReceiver);
-            broadcastReceiver = null;
-        }
     }
 
     @Override
@@ -245,10 +242,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void update_status()
     {
-        if (!do_wifi_switch && broadcastReceiver != null) {
+        if (!do_wifi_switch && broadcastReceiver != null)
             unregisterReceiver(broadcastReceiver);
-            broadcastReceiver = null;
-        }
 
         if (!connectivity && do_wifi_switch) {
             if (!switch_wifi())
