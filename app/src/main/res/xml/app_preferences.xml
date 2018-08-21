@@ -9,7 +9,7 @@
             android:summaryOn="Sounds enabled"
             android:title="Sound" />
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="wifiSwitchEnabled"
             android:summaryOff="Autom. Wifi Switch disabled"
             android:summaryOn="Autom. Wifi Switch enabled"
