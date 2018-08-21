@@ -186,6 +186,17 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void api_request(ApiCommand command)
+    {
+        if (connectivity) {
+            play(s_req);
+            api.issueCommand(command);
+        } else {
+            play(s_alert);
+            Toast.makeText(this, "Error: No connectivity", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void state_unknown()
     {
         logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border);
@@ -194,18 +205,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUnlock(View view)
     {
-        if (switch_wifi()) {
-            play(s_req);
-            api.unlock();
-        }
+        api_request(ApiCommand.UNLOCK);
     }
 
     public void onLock(View view)
     {
-        if (switch_wifi()) {
-            play(s_req);
-            api.lock();
-        }
+        api_request(ApiCommand.LOCK);
     }
 
     public void onError(String err)
@@ -221,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
             switch_wifi();
 
         if (connectivity)
-            api.status();
+            api.issueCommand(ApiCommand.STATUS);
         else
             state_unknown();
     }

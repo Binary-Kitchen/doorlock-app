@@ -40,7 +40,7 @@ public class DoorlockApi {
 
     }
 
-    private void issueCommand(ApiCommand command){
+    public void issueCommand(ApiCommand command){
         RequestBody requestBody = new FormBody.Builder()
                 .add("command", command.toString())
                 .add("target", target)
@@ -50,21 +50,6 @@ public class DoorlockApi {
         Request request = request_uri.post(requestBody).build();
 
         client.newCall(request).enqueue(commandCallback);
-    }
-
-    public void unlock()
-    {
-        issueCommand(ApiCommand.UNLOCK);
-    }
-
-    public void lock()
-    {
-        issueCommand(ApiCommand.LOCK);
-    }
-
-    public void status()
-    {
-        issueCommand(ApiCommand.STATUS);
     }
 
     public class ApiCommandResponseCallback implements Callback
