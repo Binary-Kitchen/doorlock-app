@@ -27,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +49,6 @@ import static android.net.wifi.WifiManager.WIFI_STATE_UNKNOWN;
 
 public class MainActivity extends AppCompatActivity {
     private final static String doorlock_fqdn = "lock.binary.kitchen";
-    private boolean do_wifi_switch;
     private boolean connectivity;
     private DoorlockApi api;
     private TextView statusView;
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private SoundPool sp;
     private int s_ok, s_req, s_alert;
 
+    ScanReceiver scanReceiver;
     WifiReceiver broadcastReceiver;
-    IntentFilter intentFilter;
 
     public MainActivity()
     {
@@ -72,10 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
-
-        broadcastReceiver = new WifiReceiver();
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 
         statusView = findViewById(R.id.statusTextView);
         logo = findViewById(R.id.logo);
@@ -121,15 +117,29 @@ public class MainActivity extends AppCompatActivity {
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
 
         connectivity = false;
-        do_wifi_switch = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 //for versions greater android 8 we need coarse position permissions to get ssid
                 if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
-                    do_wifi_switch = true;
-                    registerReceiver(broadcastReceiver, intentFilter);
+
+                    WifiManager wifiManager;
+                    int wifi_state;
+
+                    wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                    wifi_state = wifiManager.getWifiState();
+
+                    if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
+                            wifi_state == WIFI_STATE_UNKNOWN) {
+                        scanReceiver = new ScanReceiver();
+                        IntentFilter ifilter = new IntentFilter();
+                        ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+                        registerReceiver(scanReceiver, ifilter);
+                        wifiManager.setWifiEnabled(true);
+                    } else {
+                        switch_wifi();
+                    }
                 } else {
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
                 }
@@ -146,8 +156,15 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onPause();
 
-        if (broadcastReceiver != null)
+        if (scanReceiver != null) {
+            unregisterReceiver(scanReceiver);
+            scanReceiver = null;
+        }
+
+        if (broadcastReceiver != null) {
             unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
     }
 
     @Override
@@ -163,10 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
         switch(requestCode) {
             case POS_PERM_REQUEST:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    do_wifi_switch = true;
-                else {
+                if (!(grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     AlertDialog.Builder dialog;
 
                     prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
@@ -242,14 +257,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void update_status()
     {
-        if (!do_wifi_switch && broadcastReceiver != null)
-            unregisterReceiver(broadcastReceiver);
-
-        if (!connectivity && do_wifi_switch) {
-            if (!switch_wifi())
-                state_unknown();
-        }
-
         if (connectivity)
             api.issueCommand(ApiCommand.STATUS);
         else
@@ -293,38 +300,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean switch_wifi() {
+        Log.d("switch_wifi", "enter");
+        if (broadcastReceiver == null) {
+            Log.d("switch_wifi", "register recv");
+            broadcastReceiver = new WifiReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
+        return __switch_wifi();
+    }
+
     /**
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    private boolean switch_wifi() {
+    private boolean __switch_wifi() {
         List<WifiConfiguration> configured_networks;
         List<ScanResult> scan_results;
         WifiManager wifiManager;
         boolean in_range;
-        int wifi_state;
         String ssid;
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        wifi_state = wifiManager.getWifiState();
 
-        if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
-                wifi_state == WIFI_STATE_UNKNOWN) {
-            wifiManager.setWifiEnabled(true);
-        } else {
-            /* Are we already connected to some kitchen network? */
-            ssid = wifiManager.getConnectionInfo().getSSID();
-            if (is_ssid_valid(ssid)) {
-                connectivity = true;
-                return true;
-            }
-            wifiManager.disconnect();
-        }
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-
+        /* Are we already connected to some kitchen network? */
+        ssid = wifiManager.getConnectionInfo().getSSID();
+        if (is_ssid_valid(ssid)) {
+            connectivity = true;
+            return true;
         }
 
         /* Let's see if any kitchen network is actually in range */
@@ -354,7 +359,9 @@ public class MainActivity extends AppCompatActivity {
          */
         for (WifiConfiguration networkConf: configured_networks)
             if (networkConf.SSID.equals("\"secure.binary-kitchen.de\"")) {
+                wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
+                wifiManager.reconnect();
                 return true;
             }
 
@@ -362,7 +369,9 @@ public class MainActivity extends AppCompatActivity {
         /* Second step: Fall back to legacy.binary.kitchen */
         for (WifiConfiguration networkConf: configured_networks)
             if (networkConf.SSID.equals("\"legacy.binary-kitchen.de\"")) {
+                wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
+                wifiManager.reconnect();
                 return true;
             }
 
@@ -390,6 +399,16 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public class ScanReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("SCANRECEIVER", "results available");
+            switch_wifi();
+            unregisterReceiver(scanReceiver);
+            scanReceiver = null;
+        }
+    };
 
     public class WifiReceiver extends BroadcastReceiver {
         @Override
