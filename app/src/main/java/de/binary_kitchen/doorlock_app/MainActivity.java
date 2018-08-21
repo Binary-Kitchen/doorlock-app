@@ -91,9 +91,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume()
     {
         String username, password;
+        SharedPreferences prefs;
+
         super.onResume();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        username = prefs.getString("username", "");
+        password = prefs.getString("password", "");
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter valid credentials", Toast.LENGTH_LONG).show();
+            this.startActivity(new Intent(this, SettingsActivity.class));
+        }
+
         if (sp != null) {
             sp.release();
             sp = null;
@@ -105,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
             s_alert = sp.load(this, R.raw.alert20, 1);
             s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
         }
-
-        username = prefs.getString("username", "");
-        password = prefs.getString("password", "");
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
 
