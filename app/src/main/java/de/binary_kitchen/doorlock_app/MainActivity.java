@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
-        connectivity = false;
         statusView = findViewById(R.id.statusTextView);
         logo = findViewById(R.id.logo);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
@@ -116,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
 
+        connectivity = false;
         do_wifi_switch = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
