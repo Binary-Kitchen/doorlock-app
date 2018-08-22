@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     do_wifi_switch = true;
                 else {
                     AlertDialog.Builder dialog;
+
                     prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
 
                     dialog = new AlertDialog.Builder(new ContextThemeWrapper(
@@ -177,14 +178,13 @@ public class MainActivity extends AppCompatActivity {
                     dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            getApplicationContext().startActivity(myIntent);
+                            prefs.edit().putBoolean("wifiSwitchEnabled", true).apply();
+                            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
                         }
                     });
                     dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
                         }
                     });
 
