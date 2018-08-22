@@ -1,15 +1,22 @@
 package de.binary_kitchen.doorlock_app;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -37,9 +44,14 @@ import de.binary_kitchen.doorlock_app.doorlock_api.DoorlockApi;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiResponse;
 import de.binary_kitchen.doorlock_app.doorlock_api.LockState;
 
+import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
+import static android.net.wifi.WifiManager.WIFI_STATE_DISABLING;
+import static android.net.wifi.WifiManager.WIFI_STATE_UNKNOWN;
+
 public class MainActivity extends AppCompatActivity {
     private final static String doorlock_fqdn = "lock.binary.kitchen";
     private boolean do_wifi_switch;
+    private boolean connectivity;
     private DoorlockApi api;
     private TextView statusView;
     private ImageView logo;
@@ -47,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int POS_PERM_REQUEST = 0;
     private SoundPool sp;
     private int s_ok, s_req, s_alert;
+
+    WifiReceiver broadcastReceiver;
 
     public MainActivity()
     {
@@ -60,14 +74,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
+        connectivity = false;
         statusView = findViewById(R.id.statusTextView);
         logo = findViewById(R.id.logo);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (switch_wifi())
-                    api.status();
+                update_status();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -108,52 +122,11 @@ public class MainActivity extends AppCompatActivity {
                 else
                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
             }
-
-            /*
-            LocationManager lm = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-            boolean network_enabled = false;
-
-            try {
-                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            } catch(Exception ex) {
-                Log.d("EXception", ex.toString());
-            }
-
-            if(!network_enabled) {
-                // notify user
-                AlertDialog.Builder dialog = new AlertDialog.Builder((new ContextThemeWrapper(this, R.style.Theme_AppCompat_Light_Dialog_Alert)));
-                dialog.setMessage("To read the ssid of wifis the app needs location information.");
-                dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        // TODO Auto-generated method stub
-                        Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        getApplicationContext().startActivity(myIntent);
-                        //get gps
-                    }
-                });
-                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-                dialog.show();
-                //return false;
-            }
-            //return true;
-            */
+        } else {
+            connectivity = true;
         }
 
-        api.status();
-
-
-        /*if (!do_wifi_switch) {
-            Toast.makeText(this, "Insufficient permissions to change WiFi",
-                    Toast.LENGTH_LONG).show();
-        }*/
+        update_status();
     }
 
 
@@ -242,6 +215,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
 
+    public void update_status()
+    {
+        if (!connectivity && do_wifi_switch)
+            switch_wifi();
+
+        if (connectivity)
+            api.status();
+        else
+            state_unknown();
+    }
+
     public void onUpdateStatus(ApiCommand issued_command, ApiResponse resp)
     {
         LockState state;
@@ -283,6 +267,15 @@ public class MainActivity extends AppCompatActivity {
     {
         Boolean succ;
 
+        /* TBD: this will return true, but we're actually not connected yet.
+           We should listen on NETWORK_STATE_CHANGE_ACTION */
+        if (broadcastReceiver == null)
+            broadcastReceiver = new WifiReceiver();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        registerReceiver(broadcastReceiver, intentFilter);
+
         succ = __switch_wifi();
         if (!succ)
             state_unknown();
@@ -294,41 +287,77 @@ public class MainActivity extends AppCompatActivity {
      * Checks permissions and location service status to read ssids and change wifi state.
      * If permissions are not granted, request permissions.
      */
-    private Boolean __switch_wifi()
-    {
+    private boolean __switch_wifi() {
+        List<WifiConfiguration> configured_networks;
+        List<ScanResult> scan_results;
         WifiManager wifiManager;
+        boolean in_range;
+        int wifi_state;
         String ssid;
-        Boolean success = Boolean.FALSE;
 
-        wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-        ssid = wifiManager.getConnectionInfo().getSSID();
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        wifi_state = wifiManager.getWifiState();
 
-        if (is_ssid_valid(ssid))
-            return Boolean.TRUE;
-
-        List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-        if (configuredNetworks != null){
-            for (WifiConfiguration networkConf: configuredNetworks) {
-                if (is_ssid_valid(networkConf.SSID)){
-                    wifiManager.disconnect();
-                    /* TBD: this will return true, but we're actually not connected yet.
-                       We should listen on NETWORK_STATE_CHANGE_ACTION */
-                    if (wifiManager.enableNetwork(networkConf.networkId,true)) {
-                        /* TBD: HACK! This can be removed if we asynchronously wait for WiFi */
-                        Toast.makeText(this, "Waiting for WiFi to settle down…",
-                                Toast.LENGTH_LONG).show();
-                        success = Boolean.TRUE;
-                        break;
-                    }
-                }
-            }
+        if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
+                wifi_state == WIFI_STATE_UNKNOWN) {
+            wifiManager.setWifiEnabled(true);
+        } else {
+            /* Are we already connected to some kitchen network? */
+            ssid = wifiManager.getConnectionInfo().getSSID();
+            if (is_ssid_valid(ssid))
+                return true;
+            wifiManager.disconnect();
         }
 
-        if (!success)
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+
+        }
+
+        /* Let's see if any kitchen network is actually in range */
+        in_range = false;
+        scan_results = wifiManager.getScanResults();
+        if (scan_results != null)
+            for (ScanResult scan_result: scan_results)
+                if (scan_result.SSID.contains(".binary-kitchen.de")) {
+                    in_range = true;
+                    break;
+                }
+
+        if (!in_range) {
             Toast.makeText(this,
-                    "Couldn't find valid WiFi. Maybe kitchen out of range or WiFi disabled?",
+                    "Couldn't find valid WiFi. Maybe kitchen out of range?",
                     Toast.LENGTH_LONG).show();
-        return success;
+            return false;
+        }
+
+        configured_networks = wifiManager.getConfiguredNetworks();
+        if (configured_networks == null)
+            return false;
+
+        /*
+         * First step: search if user has secure.binary.kitchen configured. Prefer this network over
+         * others
+         */
+        for (WifiConfiguration networkConf: configured_networks)
+            if (networkConf.SSID.equals("\"secure.binary-kitchen.de\"")) {
+                wifiManager.enableNetwork(networkConf.networkId, true);
+                return true;
+            }
+
+
+        /* Second step: Fall back to legacy.binary.kitchen */
+        for (WifiConfiguration networkConf: configured_networks)
+            if (networkConf.SSID.equals("\"legacy.binary-kitchen.de\"")) {
+                wifiManager.enableNetwork(networkConf.networkId, true);
+                return true;
+            }
+
+        Toast.makeText(this,
+                "Unable to connect: Kitchen WiFi not configured",
+                Toast.LENGTH_LONG).show();
+        return false;
     }
 
     boolean is_ssid_valid(String ssid)
@@ -349,4 +378,25 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public class WifiReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connManager;
+            WifiManager wifiManager;
+            NetworkInfo mWifi;
+            WifiInfo wifiInfo;
+            String ssid;
+
+            connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            wifiManager = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+
+            mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiInfo = wifiManager.getConnectionInfo();
+            ssid = wifiInfo.getSSID();
+
+            connectivity = is_ssid_valid(ssid) && mWifi.isConnected();
+            update_status();
+        }
+    };
 }
