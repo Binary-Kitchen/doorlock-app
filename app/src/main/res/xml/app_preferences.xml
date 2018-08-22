@@ -14,6 +14,13 @@
             android:summaryOff="Autom. Wifi Switch disabled"
             android:summaryOn="Autom. Wifi Switch enabled"
             android:title="WiFi Switch" />
+        <EditTextPreference
+            android:key="hostname"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"
+            android:title="Doorlock Hostname"
+            android:defaultValue="lock.binary.kitchen" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Credentials">
 

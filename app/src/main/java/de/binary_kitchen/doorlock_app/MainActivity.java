@@ -48,7 +48,6 @@ import static android.net.wifi.WifiManager.WIFI_STATE_DISABLING;
 import static android.net.wifi.WifiManager.WIFI_STATE_UNKNOWN;
 
 public class MainActivity extends AppCompatActivity {
-    private final static String doorlock_fqdn = "lock.binary.kitchen";
     private boolean connectivity;
     private DoorlockApi api;
     private TextView statusView;
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume()
     {
-        String username, password;
+        String username, password, hostname;
         SharedPreferences prefs;
 
         super.onResume();
@@ -96,8 +95,9 @@ public class MainActivity extends AppCompatActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
+        hostname = prefs.getString("hostname", "");
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
             Toast.makeText(this, "Please enter valid credentials", Toast.LENGTH_LONG).show();
             this.startActivity(new Intent(this, SettingsActivity.class));
         }
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
         }
 
-        api = new DoorlockApi(this, doorlock_fqdn, username, password, "kitchen");
+        api = new DoorlockApi(this, hostname, username, password, "kitchen");
 
         connectivity = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {
