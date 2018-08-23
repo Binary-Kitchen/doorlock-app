@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
         }
 
-        api = new DoorlockApi(this, hostname, username, password, "kitchen");
+        api = new DoorlockApi(this, hostname, username, password);
 
         connectivity = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {

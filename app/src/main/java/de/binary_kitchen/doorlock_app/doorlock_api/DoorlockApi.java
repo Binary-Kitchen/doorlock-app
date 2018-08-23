@@ -22,10 +22,8 @@ public class DoorlockApi {
     private final String username, password;
     private Callback commandCallback;
     private OkHttpClient client;
-    private final String target;
 
-    public DoorlockApi(Context ctx, String fqdn, String username, String password,
-                       String target)
+    public DoorlockApi(Context ctx, String fqdn, String username, String password)
     {
         Uri.Builder builder = new Uri.Builder();
 
@@ -34,7 +32,6 @@ public class DoorlockApi {
         this.request_uri = new Request.Builder().url(builder.build().toString());
         this.username = username;
         this.password = password;
-        this.target = target;
         this.client = new OkHttpClient();
         this.commandCallback = new ApiCommandResponseCallback(ctx);
 
@@ -43,7 +40,6 @@ public class DoorlockApi {
     public void issueCommand(ApiCommand command){
         RequestBody requestBody = new FormBody.Builder()
                 .add("command", command.toString())
-                .add("target", target)
                 .add("user", username)
                 .add("pass", password)
                 .build();
