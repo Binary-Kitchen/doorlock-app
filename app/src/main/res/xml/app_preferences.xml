@@ -44,7 +44,7 @@
         <Preference
             android:persistent="false"
             android:selectable="false"
-            android:summary="Binary Kitchen e.V.\nThomas Schmid\nLicensed under GPLv3"
+            android:summary="Copyright © Binary Kitchen e.V., 2018\nAuthors:\n  Ralf Ramsauer\n Thomas Schmid\nLicensed under GPLv3"
             android:title="About"/>
     </PreferenceCategory>
 </PreferenceScreen>
