@@ -1,12 +1,15 @@
 package de.binary_kitchen.doorlock_app;
 
 import android.Manifest;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -30,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +82,20 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void update_widgets()
+    {
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
+        Intent intent = new Intent(getApplicationContext(), SpaceWidget.class);
+
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = widgetManager.getAppWidgetIds(new ComponentName(this, SpaceWidget.class));
+
+        widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list);
+
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -265,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
     {
         LockState state;
         ApiErrorCode err;
+
+        update_widgets();
 
         err = resp.getErrorCode();
         if (err == ApiErrorCode.PERMISSION_DENIED || err == ApiErrorCode.INVALID ||
