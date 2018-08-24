@@ -10,7 +10,7 @@ public enum ApiErrorCode{
     @SerializedName("4") INVALID(4),
     @SerializedName("5") LDAP_ERROR(5);
 
-    private int value;
+    final private int value;
 
     ApiErrorCode(int value){
         this.value=value;

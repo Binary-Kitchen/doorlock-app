@@ -55,12 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private SoundPool sp;
     private int s_ok, s_req, s_alert;
 
-    ScanReceiver scanReceiver;
-    WifiReceiver broadcastReceiver;
-
-    public MainActivity()
-    {
-    }
+    private ScanReceiver scanReceiver;
+    private WifiReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
 
-    public void update_status()
+    private void update_status()
     {
         if (connectivity)
             api.issueCommand(ApiCommand.STATUS);
@@ -302,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean switch_wifi() {
+    private void switch_wifi() {
         List<WifiConfiguration> configured_networks;
         List<ScanResult> scan_results;
         WifiManager wifiManager;
@@ -322,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
         ssid = wifiManager.getConnectionInfo().getSSID();
         if (is_ssid_valid(ssid)) {
             connectivity = true;
-            return true;
+            return;
         }
 
         /* Let's see if any kitchen network is actually in range */
@@ -339,12 +335,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,
                     "Couldn't find valid WiFi. Maybe kitchen out of range?",
                     Toast.LENGTH_LONG).show();
-            return false;
+            return;
         }
 
         configured_networks = wifiManager.getConfiguredNetworks();
         if (configured_networks == null)
-            return false;
+            return;
 
         /*
          * First step: search if user has secure.binary.kitchen configured. Prefer this network over
@@ -355,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
                 wifiManager.reconnect();
-                return true;
+                return;
             }
 
 
@@ -365,16 +361,16 @@ public class MainActivity extends AppCompatActivity {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
                 wifiManager.reconnect();
-                return true;
+                return;
             }
 
         Toast.makeText(this,
                 "Unable to connect: Kitchen WiFi not configured",
                 Toast.LENGTH_LONG).show();
-        return false;
+        return;
     }
 
-    boolean is_ssid_valid(String ssid)
+    private boolean is_ssid_valid(String ssid)
     {
         return ssid != null
                 && (ssid.equals("\"legacy.binary-kitchen.de\"")
@@ -400,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
             unregisterReceiver(scanReceiver);
             scanReceiver = null;
         }
-    };
+    }
 
     public class WifiReceiver extends BroadcastReceiver {
         @Override
@@ -421,5 +417,5 @@ public class MainActivity extends AppCompatActivity {
             connectivity = is_ssid_valid(ssid) && mWifi.isConnected();
             update_status();
         }
-    };
+    }
 }

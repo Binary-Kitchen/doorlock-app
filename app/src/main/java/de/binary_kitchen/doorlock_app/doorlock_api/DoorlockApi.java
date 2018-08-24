@@ -20,8 +20,8 @@ import okhttp3.Response;
 public class DoorlockApi {
     private final Request.Builder request_uri;
     private final String username, password;
-    private Callback commandCallback;
-    private OkHttpClient client;
+    final private Callback commandCallback;
+    final private OkHttpClient client;
 
     public DoorlockApi(Context ctx, String fqdn, String username, String password)
     {
@@ -48,10 +48,11 @@ public class DoorlockApi {
         client.newCall(request).enqueue(commandCallback);
     }
 
-    public class ApiCommandResponseCallback implements Callback
+    private class ApiCommandResponseCallback implements Callback
     {
-        private Context context;
-        public ApiCommandResponseCallback(Context context)
+        final private Context context;
+
+        private ApiCommandResponseCallback(Context context)
         {
             this.context = context;
         }

@@ -16,9 +16,9 @@ public class ApiResponse {
         return status;
     }
 
-    @SerializedName("err") ApiErrorCode errorCode;
-    @SerializedName("msg") String message;
-    @SerializedName("status") LockState status;
+    private @SerializedName("err") ApiErrorCode errorCode;
+    private @SerializedName("msg") String message;
+    private @SerializedName("status") LockState status;
 
     @Override
     public String toString() {
