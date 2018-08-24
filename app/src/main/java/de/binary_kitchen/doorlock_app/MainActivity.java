@@ -26,7 +26,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -302,27 +301,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean switch_wifi() {
-        Log.d("switch_wifi", "enter");
-        if (broadcastReceiver == null) {
-            Log.d("switch_wifi", "register recv");
-            broadcastReceiver = new WifiReceiver();
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(broadcastReceiver, intentFilter);
-        }
-        return __switch_wifi();
-    }
-
-    /**
-     * Checks permissions and location service status to read ssids and change wifi state.
-     * If permissions are not granted, request permissions.
-     */
-    private boolean __switch_wifi() {
         List<WifiConfiguration> configured_networks;
         List<ScanResult> scan_results;
         WifiManager wifiManager;
         boolean in_range;
         String ssid;
+
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new WifiReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
@@ -404,7 +394,6 @@ public class MainActivity extends AppCompatActivity {
     public class ScanReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("SCANRECEIVER", "results available");
             switch_wifi();
             unregisterReceiver(scanReceiver);
             scanReceiver = null;
