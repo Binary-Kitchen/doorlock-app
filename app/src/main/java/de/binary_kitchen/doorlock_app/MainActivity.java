@@ -118,30 +118,28 @@ public class MainActivity extends AppCompatActivity {
 
         connectivity = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                //for versions greater android 8 we need coarse position permissions to get ssid
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O  &&
+                    ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                            PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+            } else {
+                WifiManager wifiManager;
+                int wifi_state;
 
-                    WifiManager wifiManager;
-                    int wifi_state;
+                wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                wifi_state = wifiManager.getWifiState();
 
-                    wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-                    wifi_state = wifiManager.getWifiState();
-
-                    if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
-                            wifi_state == WIFI_STATE_UNKNOWN) {
-                        scanReceiver = new ScanReceiver();
-                        IntentFilter ifilter = new IntentFilter();
-                        ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-                        registerReceiver(scanReceiver, ifilter);
-                        wifiManager.setWifiEnabled(true);
-                    } else {
-                        switch_wifi();
-                    }
+                if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
+                        wifi_state == WIFI_STATE_UNKNOWN) {
+                    scanReceiver = new ScanReceiver();
+                    IntentFilter ifilter = new IntentFilter();
+                    ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+                    registerReceiver(scanReceiver, ifilter);
+                    wifiManager.setWifiEnabled(true);
                 } else {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+                    switch_wifi();
                 }
             }
         } else {
@@ -194,7 +192,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                             prefs.edit().putBoolean("wifiSwitchEnabled", true).apply();
-                            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                                return;
+                            requestPermissions(
+                                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    0);
                         }
                     });
                     dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
