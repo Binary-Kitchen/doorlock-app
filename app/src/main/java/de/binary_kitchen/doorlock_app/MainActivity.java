@@ -23,6 +23,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -82,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void logo_set_color(int color)
+    {
+        DrawableCompat.setTint(logo.getDrawable(), ContextCompat.getColor(this, color));
     }
 
     private void update_widgets()
@@ -250,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void state_unknown()
     {
-        logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border);
+        logo_set_color(R.color.colorUnknown);
         statusView.setText("");
     }
 
@@ -301,10 +307,11 @@ public class MainActivity extends AppCompatActivity {
         state = resp.getStatus();
         statusView.setText(state.toString());
 
+
         if (state == LockState.CLOSED)
-            logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_closed);
+            logo_set_color(R.color.colorLocked);
         else
-            logo.setImageResource(R.drawable.ic_binary_kitchen_bw_border_open);
+            logo_set_color(R.color.colorUnlocked);
 
         if (issued_command != ApiCommand.STATUS) {
             if (sp != null)
