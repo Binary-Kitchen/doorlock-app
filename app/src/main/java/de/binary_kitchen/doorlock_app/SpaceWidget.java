@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 
 import com.google.gson.JsonObject;
@@ -25,34 +26,30 @@ public class SpaceWidget extends AppWidgetProvider {
     private final OkHttpClient client = new OkHttpClient();
     private static boolean open, state_valid;
 
-    private final static int c_green = android.graphics.Color.rgb(0x33, 0xe5, 0x63);
-    private final static int c_red = android.graphics.Color.rgb(0xe4, 0x33, 0x5c);
-    private final static int c_unknown = android.graphics.Color.rgb(0xe5, 0x33, 0xb5);
-
-
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                         int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.space_widget);
         int resource = R.drawable.ic_unknown;
-        int color = c_unknown;
+        int color = R.color.colorUnknown;
 
         if (state_valid)
             if (open) {
                 resource = R.drawable.ic_unlock;
-                color = c_green;
+                color = R.color.colorUnlocked;
             } else {
                 resource = R.drawable.ic_lock;
-                color = c_red;
+                color = R.color.colorLocked;
             }
 
         views.setImageViewResource(R.id.state_button, resource);
-        views.setInt(R.id.text, "setBackgroundColor", color);
+        views.setInt(R.id.text, "setBackgroundColor",
+                ContextCompat.getColor(context, color));
 
         Intent intentUpdate = new Intent(context, SpaceWidget.class);
         intentUpdate.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
         int[] idArray = new int[]{appWidgetId};
-       intentUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idArray);
+        intentUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idArray);
 
         PendingIntent pendingUpdate = PendingIntent.getBroadcast(
                 context, appWidgetId, intentUpdate,
