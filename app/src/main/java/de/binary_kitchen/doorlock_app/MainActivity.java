@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         hostname = prefs.getString("hostname", "");
 
         if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
-            Toast.makeText(this, "Please enter valid credentials", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.message_invalid_credentials, Toast.LENGTH_LONG).show();
             this.startActivity(new Intent(this, SettingsActivity.class));
         }
 
@@ -199,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
                     dialog = new AlertDialog.Builder(new ContextThemeWrapper(
                             this, R.style.Theme_AppCompat_Light_Dialog_Alert));
-                    dialog.setMessage(
-                            "To read the SSID of WiFis the app needs location information.");
+                    dialog.setMessage(R.string.dialog_wifi_access);
                     dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
             api.issueCommand(command);
         } else {
             play(SoundType.ERROR);
-            Toast.makeText(this, "Error: No connectivity", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_connectivity, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -373,15 +372,13 @@ public class MainActivity extends AppCompatActivity {
         scan_results = wifiManager.getScanResults();
         if (scan_results != null)
             for (ScanResult scan_result: scan_results)
-                if (scan_result.SSID.contains(".binary-kitchen.de")) {
+                if (scan_result.SSID.contains(getString(R.string.ssid_top_level))) {
                     in_range = true;
                     break;
                 }
 
         if (!in_range) {
-            Toast.makeText(this,
-                    "Couldn't find valid WiFi. Maybe kitchen out of range?",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.out_of_range, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -394,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
          * others
          */
         for (WifiConfiguration networkConf: configured_networks)
-            if (networkConf.SSID.equals("\"secure.binary-kitchen.de\"")) {
+            if (networkConf.SSID.equals(getString(R.string.ssid_secure))) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
                 wifiManager.reconnect();
@@ -404,24 +401,22 @@ public class MainActivity extends AppCompatActivity {
 
         /* Second step: Fall back to legacy.binary.kitchen */
         for (WifiConfiguration networkConf: configured_networks)
-            if (networkConf.SSID.equals("\"legacy.binary-kitchen.de\"")) {
+            if (networkConf.SSID.equals(getString(R.string.ssid_legacy))) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(networkConf.networkId, true);
                 wifiManager.reconnect();
                 return;
             }
 
-        Toast.makeText(this,
-                "Unable to connect: Kitchen WiFi not configured",
-                Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.unable_to_connect, Toast.LENGTH_LONG).show();
         return;
     }
 
     private boolean is_ssid_valid(String ssid)
     {
         return ssid != null
-                && (ssid.equals("\"legacy.binary-kitchen.de\"")
-                || ssid.equals("\"secure.binary-kitchen.de\""));
+                && (ssid.equals(getResources().getString(R.string.ssid_legacy))
+                || ssid.equals(getResources().getString(R.string.ssid_secure)));
     }
 
     @Override
