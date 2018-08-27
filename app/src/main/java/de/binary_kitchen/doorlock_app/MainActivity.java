@@ -11,8 +11,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.SoundPool;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -37,7 +36,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiCommand;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiErrorCode;
@@ -56,11 +57,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
-    private SoundPool sp;
-    private int s_ok, s_req, s_alert;
 
     private ScanReceiver scanReceiver;
     private WifiReceiver broadcastReceiver;
+
+    private boolean sounds_enabled;
+    public enum SoundType {
+        REQUEST, OKAY, ERROR;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,17 +125,7 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(new Intent(this, SettingsActivity.class));
         }
 
-        if (sp != null) {
-            sp.release();
-            sp = null;
-        }
-
-        if (prefs.getBoolean("soundsEnabled",true)) {
-            sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-            s_req = sp.load(this, R.raw.input_request, 1);
-            s_alert = sp.load(this, R.raw.alert, 1);
-            s_ok = sp.load(this, R.raw.input_ok, 1);
-        }
+        sounds_enabled = prefs.getBoolean("soundsEnabled",true);
 
         api = new DoorlockApi(this, hostname, username, password);
 
@@ -229,10 +223,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void play(int id)
+    private void play(SoundType type)
     {
-        if (sp != null)
-            sp.play(id, 1, 1, 0, 0, 1);
+        MediaPlayer mp;
+        Random r = new Random();
+        int resid = R.raw.input_request;
+
+        if (!sounds_enabled)
+            return;
+
+        switch (type)
+        {
+            case OKAY:
+                if (r.nextDouble() <= 0.05)
+                    resid = R.raw.drum;
+                else
+                    resid = R.raw.input_ok;
+                break;
+            case ERROR:
+                if (r.nextDouble() <= 0.05)
+                    resid = R.raw.haha;
+                else
+                    resid = R.raw.alert;
+                break;
+            case REQUEST:
+                if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY &&
+                        r.nextDouble() <= 0.7)
+                    resid = R.raw.wednesday;
+                break;
+        }
+
+        mp =  MediaPlayer.create(this, resid);
+        mp.start();
     }
 
     @Override
@@ -245,10 +267,10 @@ public class MainActivity extends AppCompatActivity {
     private void api_request(ApiCommand command)
     {
         if (connectivity) {
-            play(s_req);
+            play(SoundType.REQUEST);
             api.issueCommand(command);
         } else {
-            play(s_alert);
+            play(SoundType.ERROR);
             Toast.makeText(this, "Error: No connectivity", Toast.LENGTH_LONG).show();
         }
     }
@@ -271,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onError(String err)
     {
-        play(s_alert);
+        play(SoundType.ERROR);
         state_unknown();
         Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
@@ -313,12 +335,11 @@ public class MainActivity extends AppCompatActivity {
             logo_set_color(R.color.colorUnlocked);
 
         if (issued_command != ApiCommand.STATUS) {
-            if (sp != null)
-                if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
-                        err == ApiErrorCode.ALREADY_OPEN)
-                    play(s_ok);
-                else
-                    play(s_alert);
+            if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
+                    err == ApiErrorCode.ALREADY_OPEN)
+                play(SoundType.OKAY);
+            else
+                play(SoundType.ERROR);
 
             Toast.makeText(this, resp.getMessage(), Toast.LENGTH_SHORT).show();
         }
