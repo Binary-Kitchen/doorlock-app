@@ -34,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -129,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (prefs.getBoolean("soundsEnabled",true)) {
             sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-            s_req = sp.load(this, R.raw.voy_chime_2, 1);
-            s_alert = sp.load(this, R.raw.alert20, 1);
-            s_ok = sp.load(this, R.raw.input_ok_3_clean, 1);
+            s_req = sp.load(this, R.raw.input_request, 1);
+            s_alert = sp.load(this, R.raw.alert, 1);
+            s_ok = sp.load(this, R.raw.input_ok, 1);
         }
 
         api = new DoorlockApi(this, hostname, username, password);
