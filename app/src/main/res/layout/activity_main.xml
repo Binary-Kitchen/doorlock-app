@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:padding="20dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/ic_bk" />
             <TextView
                 android:id="@+id/statusTextView"
