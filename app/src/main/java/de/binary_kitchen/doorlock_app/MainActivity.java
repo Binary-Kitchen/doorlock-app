@@ -409,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         Toast.makeText(this, R.string.unable_to_connect, Toast.LENGTH_LONG).show();
-        return;
     }
 
     private boolean is_ssid_valid(String ssid)
