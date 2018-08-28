@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean sounds_enabled;
     public enum SoundType {
-        REQUEST, OKAY, ERROR;
+        REQUEST,
+        OKAY,
+        ERROR,
     }
 
     @Override

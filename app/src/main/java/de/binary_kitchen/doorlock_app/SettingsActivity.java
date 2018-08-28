@@ -41,15 +41,15 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
-
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == android.R.id.home) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             String username = prefs.getString("username", "");
             String password = prefs.getString("password", "");
             String hostname = prefs.getString("hostname", "");
 
-            if(username.isEmpty() || password.isEmpty() || hostname.isEmpty()){
+            if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
                 Toast.makeText(this, R.string.message_invalid_credentials,
                         Toast.LENGTH_LONG).show();
                 return false;
@@ -58,6 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
