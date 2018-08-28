@@ -8,7 +8,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "de.binary_kitchen.doorlock_app"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 2
         versionName "2.0"
@@ -31,10 +31,8 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.takisoft.fix:preference-v7:27.1.1.1'
-    implementation 'com.android.support:preference-v14:28.0.0-alpha3'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     testImplementation 'junit:junit:4.12'
