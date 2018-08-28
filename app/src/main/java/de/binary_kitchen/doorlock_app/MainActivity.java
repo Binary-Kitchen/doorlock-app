@@ -130,15 +130,15 @@ public class MainActivity extends AppCompatActivity {
 
         super.onResume();
 
+        if (!SettingsActivity.check_settings(this)) {
+            this.startActivity(new Intent(this, SettingsActivity.class));
+            return;
+        }
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
         hostname = prefs.getString("hostname", "");
-
-        if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
-            Toast.makeText(this, R.string.message_invalid_credentials, Toast.LENGTH_LONG).show();
-            this.startActivity(new Intent(this, SettingsActivity.class));
-        }
 
         sounds_enabled = prefs.getBoolean("soundsEnabled",true);
 

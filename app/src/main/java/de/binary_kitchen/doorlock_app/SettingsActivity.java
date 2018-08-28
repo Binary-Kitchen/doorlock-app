@@ -13,6 +13,7 @@
 
 package de.binary_kitchen.doorlock_app;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -40,20 +41,28 @@ public class SettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public static boolean check_settings(Context context)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String username = prefs.getString("username", "");
+        String password = prefs.getString("password", "");
+        String hostname = prefs.getString("hostname", "");
+
+        if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
+            Toast.makeText(context, R.string.message_invalid_credentials,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         if (item.getItemId() == android.R.id.home) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String username = prefs.getString("username", "");
-            String password = prefs.getString("password", "");
-            String hostname = prefs.getString("hostname", "");
-
-            if (username.isEmpty() || password.isEmpty() || hostname.isEmpty()) {
-                Toast.makeText(this, R.string.message_invalid_credentials,
-                        Toast.LENGTH_LONG).show();
+            if (!check_settings(this))
                 return false;
-            }
 
             onBackPressed();
             return true;
