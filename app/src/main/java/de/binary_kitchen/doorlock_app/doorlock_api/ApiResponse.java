@@ -12,27 +12,11 @@ public class ApiResponse {
         return message;
     }
 
-    public LockState getStatus() {
-        return status;
+    public boolean is_open() {
+        return open;
     }
 
     private @SerializedName("err") ApiErrorCode errorCode;
     private @SerializedName("msg") String message;
-    private @SerializedName("status") LockState status;
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder().append("errorCode: ")
-                .append(errorCode)
-                .append(", message: ")
-                .append(message)
-                .append(", status: ");
-        if(status == null){
-            sb.append("null");
-        } else{
-            sb.append(status.toString());
-        }
-
-        return sb.toString();
-    }
+    private @SerializedName("open") boolean open;
 }

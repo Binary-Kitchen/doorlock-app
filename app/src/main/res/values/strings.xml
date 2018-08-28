@@ -30,4 +30,6 @@
     <string name="category_information">Info</string>
     <string name="activity_settings_title">Settings</string>
     <string name="activity_main_title">BK Doorlock</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
 </resources>

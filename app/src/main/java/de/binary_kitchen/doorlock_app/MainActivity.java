@@ -57,7 +57,6 @@ import de.binary_kitchen.doorlock_app.doorlock_api.ApiCommand;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiErrorCode;
 import de.binary_kitchen.doorlock_app.doorlock_api.DoorlockApi;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiResponse;
-import de.binary_kitchen.doorlock_app.doorlock_api.LockState;
 
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
 import static android.net.wifi.WifiManager.WIFI_STATE_DISABLING;
@@ -322,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUpdateStatus(ApiCommand issued_command, ApiResponse resp)
     {
-        LockState state;
         ApiErrorCode err;
 
         update_widgets();
@@ -339,14 +337,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        state = resp.getStatus();
-        statusView.setText(state.toString());
-
-
-        if (state == LockState.CLOSED)
-            logo_set_color(R.color.colorLocked);
-        else
+        if (resp.is_open()) {
+            statusView.setText(R.string.open);
             logo_set_color(R.color.colorUnlocked);
+        } else {
+            statusView.setText(R.string.closed);
+            logo_set_color(R.color.colorLocked);
+        }
 
         if (issued_command != ApiCommand.STATUS) {
             if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
