@@ -325,12 +325,12 @@ public class MainActivity extends AppCompatActivity {
 
         update_widgets();
 
-        err = resp.getErrorCode();
+        err = resp.get_error_code();
         if (err == ApiErrorCode.PERMISSION_DENIED || err == ApiErrorCode.INVALID ||
                 err == ApiErrorCode.LDAP_ERROR) {
             String msg;
 
-            msg = err.toString() + ": " + resp.getMessage();
+            msg = err.toString() + ": " + resp.get_message();
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             state_unknown();
 
@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
             else
                 play(SoundType.ERROR);
 
-            Toast.makeText(this, resp.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, resp.get_message(), Toast.LENGTH_SHORT).show();
         }
     }
 

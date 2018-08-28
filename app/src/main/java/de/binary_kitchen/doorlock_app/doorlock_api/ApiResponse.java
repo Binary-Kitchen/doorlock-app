@@ -4,15 +4,18 @@ import com.google.gson.annotations.SerializedName;
 
 public class ApiResponse {
 
-    public ApiErrorCode getErrorCode() {
+    public ApiErrorCode get_error_code()
+    {
         return errorCode;
     }
 
-    public String getMessage() {
+    public String get_message()
+    {
         return message;
     }
 
-    public boolean is_open() {
+    public boolean is_open()
+    {
         return open;
     }
 
