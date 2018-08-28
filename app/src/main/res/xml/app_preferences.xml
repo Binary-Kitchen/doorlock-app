@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Settings">
+    <PreferenceCategory android:title="@string/category_settings">
         <SwitchPreference
             android:defaultValue="true"
             android:key="soundsEnabled"
-            android:summaryOff="Sounds disabled"
-            android:summaryOn="Sounds enabled"
-            android:title="Sound" />
+            android:summaryOff="@string/sounds_disabled"
+            android:summaryOn="@string/sounds_enabled"
+            android:title="@string/sound_switch_title" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="wifiSwitchEnabled"
-            android:summaryOff="Autom. Wifi Switch disabled"
-            android:summaryOn="Autom. Wifi Switch enabled"
-            android:title="WiFi Switch" />
+            android:summaryOff="@string/wifi_switch_summary_off"
+            android:summaryOn="@string/wifi_switch_summary_on"
+            android:title="@string/wifi_switch_title" />
         <EditTextPreference
             android:key="hostname"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="text"
-            android:title="Doorlock Hostname"
+            android:title="@string/hostname_title"
             android:defaultValue="lock.binary.kitchen" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Credentials">
+    <PreferenceCategory android:title="@string/category_credentials">
 
         <EditTextPreference
             android:key="username"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="text"
-            android:title="Username"
-            android:summary="Your Binary-Kitchen username" />
+            android:title="@string/username"
+            android:summary="@string/username_summary" />
         <EditTextPreference
             android:key="password"
             android:selectAllOnFocus="true"
             android:inputType="textPassword"
             android:password="true"
             android:singleLine="true"
-            android:title="Password"
-            android:summary="The corresponding password" />
+            android:title="@string/password"
+            android:summary="@string/password_summary" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Info">
+    <PreferenceCategory android:title="@string/category_information">
         <Preference
             android:persistent="false"
             android:selectable="false"
             android:summary="@string/about"
-            android:title="About"/>
+            android:title="@string/about_title"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Einstellungen</string>
+    <string name="unlock">Aufsperren</string>
+    <string name="lock">Zusperren</string>
+    <string name="kitchen_status">Kitchen Status</string>
+    <string name="out_of_range">Konnte kein passendes W-Lan finden. Kitchen außer Reichweite?</string>
+    <string name="unable_to_connect">Konnte nicht verbinden. Kitchen W-Lan ist nicht konfiguriert</string>
+    <string name="no_connectivity">Fehler: Keine Verbindung</string>
+    <string name="dialog_wifi_access">Um auf den Namen von W-Lan Verbindungen zugreifen zu können, benötigt die App zugriff auf deine Position.</string>
+    <string name="message_invalid_credentials">Bitte korrekte Zugangsdaten eingeben</string>
+    <string name="username">Benutzername</string>
+    <string name="username_summary">Dein Binary-Kitchen Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="password_summary">Das passende Passwort</string>
+    <string name="about_title">Über</string>
+    <string name="hostname_title">Doorlock Hostname</string>
+    <string name="wifi_switch_summary_on">Autom. W-Lan Wechsler an</string>
+    <string name="wifi_switch_summary_off">Autom. W-Lan Wechsler aus</string>
+    <string name="wifi_switch_title">W-Lan Wechsler</string>
+    <string name="sound_switch_title">Töne</string>
+    <string name="sounds_enabled">Töne an</string>
+    <string name="sounds_disabled">Töne aus</string>
+    <string name="category_credentials">Zugangsdaten</string>
+    <string name="category_settings">Einstellungen</string>
+    <string name="category_information">Information</string>
+    <string name="activity_settings_title">Einstellungen</string>
+    <string name="activity_main_title">BK Doorlock</string>
+</resources>
