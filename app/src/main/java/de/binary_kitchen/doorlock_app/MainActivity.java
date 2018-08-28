@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.ACCESS_COARSE_LOCATION) !=
                             PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, POS_PERM_REQUEST);
             } else {
                 WifiManager wifiManager;
                 int wifi_state;
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             requestPermissions(
                                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                    0);
+                                    POS_PERM_REQUEST);
                         }
                     });
                     dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
