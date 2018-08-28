@@ -13,11 +13,14 @@
 
 package de.binary_kitchen.doorlock_app;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompatDividers;
 
@@ -40,6 +43,18 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String username = prefs.getString("username", "");
+            String password = prefs.getString("password", "");
+            String hostname = prefs.getString("hostname", "");
+
+            if(username.isEmpty() || password.isEmpty() || hostname.isEmpty()){
+                Toast.makeText(this, R.string.message_invalid_credentials,
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+
             onBackPressed();
             return true;
         }
