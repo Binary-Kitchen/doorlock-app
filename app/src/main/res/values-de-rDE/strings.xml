@@ -28,4 +28,5 @@
     <string name="activity_main_title">BK Doorlock</string>
     <string name="open">Geöffnet</string>
     <string name="closed">Geschlossen</string>
+    <string name="err_location_provider">Automatisches WiFi Wechseln temporär deaktiviert aufgrund deaktivierter Lokalisierungsdienste</string>
 </resources>
