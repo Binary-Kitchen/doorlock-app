@@ -24,6 +24,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -153,20 +154,28 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, POS_PERM_REQUEST);
             } else {
                 WifiManager wifiManager;
+                LocationManager lm;
                 int wifi_state;
 
-                wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-                wifi_state = wifiManager.getWifiState();
-
-                if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
-                        wifi_state == WIFI_STATE_UNKNOWN) {
-                    scanReceiver = new ScanReceiver();
-                    IntentFilter ifilter = new IntentFilter();
-                    ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-                    registerReceiver(scanReceiver, ifilter);
-                    wifiManager.setWifiEnabled(true);
+                lm =  (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    Toast.makeText(this, R.string.err_location_provider,
+                            Toast.LENGTH_LONG).show();
+                    connectivity = true;
                 } else {
-                    switch_wifi();
+                    wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                    wifi_state = wifiManager.getWifiState();
+
+                    if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
+                            wifi_state == WIFI_STATE_UNKNOWN) {
+                        scanReceiver = new ScanReceiver();
+                        IntentFilter ifilter = new IntentFilter();
+                        ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+                        registerReceiver(scanReceiver, ifilter);
+                        wifiManager.setWifiEnabled(true);
+                    } else {
+                        switch_wifi();
+                    }
                 }
             }
         } else {
