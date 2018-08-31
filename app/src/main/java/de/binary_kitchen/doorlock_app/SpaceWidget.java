@@ -4,6 +4,7 @@
  * Copyright (c) Binary Kitchen e.V., 2018
  *
  * Authors:
+ *  Thomas Schmid <tom@binary-kitchen.de>
  *  Ralf Ramsauer <ralf@binary-kitchen.de>
  *
  * This work is licensed under the terms of the GNU GPL, version 3.  See
@@ -32,6 +33,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+
 public class SpaceWidget extends AppWidgetProvider {
     private final Request.Builder request_uri =
             new Request.Builder().url("https://www.binary-kitchen.de/spaceapi.php");
@@ -39,22 +41,19 @@ public class SpaceWidget extends AppWidgetProvider {
     private static boolean open, state_valid;
 
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                        int appWidgetId) {
+                                        int appWidgetId)
+    {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.space_widget);
-        int resource = R.drawable.ic_unknown;
         int color = R.color.colorUnknown;
 
         if (state_valid)
             if (open) {
-                resource = R.drawable.ic_unlock;
                 color = R.color.colorUnlocked;
             } else {
-                resource = R.drawable.ic_lock;
                 color = R.color.colorLocked;
             }
 
-        views.setImageViewResource(R.id.state_button, resource);
-        views.setInt(R.id.text, "setBackgroundColor",
+        views.setInt(R.id.widgetHeadImageButton,"setColorFilter",
                 ContextCompat.getColor(context, color));
 
         Intent intentUpdate = new Intent(context, SpaceWidget.class);
@@ -66,8 +65,7 @@ public class SpaceWidget extends AppWidgetProvider {
         PendingIntent pendingUpdate = PendingIntent.getBroadcast(
                 context, appWidgetId, intentUpdate,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setOnClickPendingIntent(R.id.state_button, pendingUpdate);
-
+        views.setOnClickPendingIntent(R.id.widgetHeadImageButton, pendingUpdate);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
