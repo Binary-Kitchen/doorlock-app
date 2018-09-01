@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
 
 android {
     compileSdkVersion 28
@@ -41,4 +42,10 @@ if (keystorePropertiesFile.exists()) {
     android.signingConfigs.config.keyPassword = keystoreProperties['keyPassword']
 } else {
     android.buildTypes.release.signingConfig = null
+}
+
+play{
+    jsonFile = file('google_api_key.json')
+    track = 'production'
+    uploadImages = true
 }
