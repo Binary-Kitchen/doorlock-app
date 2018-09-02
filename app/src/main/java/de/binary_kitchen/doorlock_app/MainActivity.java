@@ -332,24 +332,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUpdateStatus(ApiCommand issued_command, ApiResponse resp)
     {
-        ApiResponse.ApiErrorCode err;
-
         update_widgets();
 
-        err = resp.get_error_code();
-        if (err == ApiResponse.ApiErrorCode.PERMISSION_DENIED ||
-                err == ApiResponse.ApiErrorCode.INVALID ||
-                err == ApiResponse.ApiErrorCode.LDAP_ERROR) {
+        if (resp.error_code == ApiResponse.ApiErrorCode.PERMISSION_DENIED ||
+                resp.error_code == ApiResponse.ApiErrorCode.INVALID ||
+                resp.error_code == ApiResponse.ApiErrorCode.LDAP_ERROR) {
             String msg;
 
-            msg = err.toString() + ": " + resp.get_message();
+            msg = resp.error_code.toString() + ": " + resp.message;
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             state_unknown();
 
             return;
         }
 
-        if (resp.is_open()) {
+        if (resp.open) {
             statusView.setText(R.string.open);
             logo_set_color(R.color.colorUnlocked);
         } else {
@@ -358,14 +355,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (issued_command != ApiCommand.STATUS) {
-            if (err == ApiResponse.ApiErrorCode.SUCCESS ||
-                    err == ApiResponse.ApiErrorCode.ALREADY_LOCKED ||
-                    err == ApiResponse.ApiErrorCode.ALREADY_OPEN)
+            if (resp.error_code == ApiResponse.ApiErrorCode.SUCCESS ||
+                    resp.error_code == ApiResponse.ApiErrorCode.ALREADY_LOCKED ||
+                    resp.error_code == ApiResponse.ApiErrorCode.ALREADY_OPEN)
                 play(SoundType.OKAY);
             else
                 play(SoundType.ERROR);
 
-            Toast.makeText(this, resp.get_message(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, resp.message, Toast.LENGTH_SHORT).show();
         }
     }
 

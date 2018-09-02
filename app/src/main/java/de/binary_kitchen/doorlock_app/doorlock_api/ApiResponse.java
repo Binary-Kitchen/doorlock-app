@@ -26,23 +26,8 @@ public class ApiResponse {
         }
     }
 
-    private @SerializedName("err") ApiErrorCode errorCode;
-    private @SerializedName("msg") String message;
+    public @SerializedName("err") ApiErrorCode error_code;
+    public @SerializedName("msg") String message;
     public @SerializedName("status") DoorState status;
-    private @SerializedName("open") boolean open;
-
-    public ApiErrorCode get_error_code()
-    {
-        return errorCode;
-    }
-
-    public String get_message()
-    {
-        return message;
-    }
-
-    public boolean is_open()
-    {
-        return open;
-    }
+    public @SerializedName("open") boolean open;
 }
