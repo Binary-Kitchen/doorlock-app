@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Random;
 
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiCommand;
-import de.binary_kitchen.doorlock_app.doorlock_api.ApiErrorCode;
 import de.binary_kitchen.doorlock_app.doorlock_api.DoorlockApi;
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiResponse;
 
@@ -333,13 +332,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUpdateStatus(ApiCommand issued_command, ApiResponse resp)
     {
-        ApiErrorCode err;
+        ApiResponse.ApiErrorCode err;
 
         update_widgets();
 
         err = resp.get_error_code();
-        if (err == ApiErrorCode.PERMISSION_DENIED || err == ApiErrorCode.INVALID ||
-                err == ApiErrorCode.LDAP_ERROR) {
+        if (err == ApiResponse.ApiErrorCode.PERMISSION_DENIED ||
+                err == ApiResponse.ApiErrorCode.INVALID ||
+                err == ApiResponse.ApiErrorCode.LDAP_ERROR) {
             String msg;
 
             msg = err.toString() + ": " + resp.get_message();
@@ -358,8 +358,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (issued_command != ApiCommand.STATUS) {
-            if (err == ApiErrorCode.SUCCESS || err == ApiErrorCode.ALREADY_LOCKED ||
-                    err == ApiErrorCode.ALREADY_OPEN)
+            if (err == ApiResponse.ApiErrorCode.SUCCESS ||
+                    err == ApiResponse.ApiErrorCode.ALREADY_LOCKED ||
+                    err == ApiResponse.ApiErrorCode.ALREADY_OPEN)
                 play(SoundType.OKAY);
             else
                 play(SoundType.ERROR);
