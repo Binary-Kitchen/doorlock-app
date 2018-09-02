@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="3">
                 <ImageButton
                     android:id="@+id/Lock"
                     android:src="@drawable/ic_lock"
@@ -59,6 +59,16 @@
                     android:layout_marginEnd="5dp"
                     android:layout_height="60dp"
                     android:onClick="onLock"/>
+                <ImageButton
+                    android:id="@+id/Present"
+                    android:src="@drawable/ic_present"
+                    android:scaleType="fitCenter"
+                    android:padding="8dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_height="60dp"/>
                 <ImageButton
                     android:id="@+id/Unlock"
                     android:src="@drawable/ic_unlock"
