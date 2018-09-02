@@ -24,6 +24,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -46,6 +48,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
+        button_set_alpha(R.id.Lock, R.color.colorLocked);
+        button_set_alpha(R.id.Present, R.color.colorPresent);
+        button_set_alpha(R.id.Unlock, R.color.colorUnlocked);
+
         statusView = findViewById(R.id.statusTextView);
         logo = findViewById(R.id.logo);
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
@@ -100,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void button_set_alpha(int resource, int color)
+    {
+        Drawable db = ((ImageButton)findViewById(resource)).getDrawable();
+
+        db.setAlpha(192);
+        db.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.MULTIPLY);
     }
 
     private void logo_set_color(int color)
