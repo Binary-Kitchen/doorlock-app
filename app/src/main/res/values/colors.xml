@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorLocked">#FF0054</color>
+    <color name="colorPresent">#FF8000</color>
     <color name="colorUnlocked">#109648</color>
     <color name="colorUnknown">#116ebf</color>
 </resources>
