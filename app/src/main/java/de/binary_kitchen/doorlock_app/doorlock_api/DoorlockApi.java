@@ -23,11 +23,19 @@ public class DoorlockApi {
     final private Callback commandCallback;
     final private OkHttpClient client;
 
-    public DoorlockApi(Context ctx, String fqdn, String username, String password)
+    public DoorlockApi(Context ctx, String fqdn, String username, String password, boolean debug)
     {
+        String scheme = "https";
+        int port = 443;
         Uri.Builder builder = new Uri.Builder();
 
-        builder.scheme("https").authority(fqdn).appendPath("api");
+        if (debug) {
+            scheme = "http";
+            port = 8080;
+            password = "DEBUG";
+        }
+
+        builder.scheme(scheme).encodedAuthority(fqdn + ":" + port).appendPath("api");
 
         this.request_uri = new Request.Builder().url(builder.build().toString());
         this.username = username;

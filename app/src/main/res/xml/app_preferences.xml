@@ -21,6 +21,10 @@
             android:inputType="text"
             android:title="@string/hostname_title"
             android:defaultValue="lock.binary.kitchen" />
+        <CheckBoxPreference
+            android:key="debug"
+            android:title="Debug mode"
+            android:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_credentials">
 

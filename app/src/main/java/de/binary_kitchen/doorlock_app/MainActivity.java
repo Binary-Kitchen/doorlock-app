@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     {
         String username, password, hostname;
         SharedPreferences prefs;
+        boolean debug;
 
         super.onResume();
 
@@ -139,10 +140,11 @@ public class MainActivity extends AppCompatActivity {
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
         hostname = prefs.getString("hostname", "");
+        debug = prefs.getBoolean("debug", false);
 
         sounds_enabled = prefs.getBoolean("soundsEnabled",true);
 
-        api = new DoorlockApi(this, hostname, username, password);
+        api = new DoorlockApi(this, hostname, username, password, debug);
 
         connectivity = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {
