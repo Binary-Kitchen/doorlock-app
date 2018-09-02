@@ -49,21 +49,20 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
                 <ImageButton
-                    android:id="@+id/Unlock"
-                    android:src="@drawable/ic_unlock"
+                    android:id="@+id/Lock"
+                    android:src="@drawable/ic_lock"
                     android:scaleType="fitCenter"
                     android:padding="10dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_marginEnd="5dp"
                     android:layout_marginStart="10dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_height="60dp"
-                    android:onClick="onUnlock"
-                    android:text="@string/unlock" />
-
+                    android:onClick="onLock"
+                    android:text="@string/lock" />
                 <ImageButton
-                    android:id="@+id/Lock"
-                    android:src="@drawable/ic_lock"
+                    android:id="@+id/Unlock"
+                    android:src="@drawable/ic_unlock"
                     android:scaleType="fitCenter"
                     android:padding="10dp"
                     android:layout_weight="1"
@@ -71,8 +70,8 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
                     android:layout_height="60dp"
-                    android:onClick="onLock"
-                    android:text="@string/lock" />
+                    android:onClick="onUnlock"
+                    android:text="@string/unlock" />
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
