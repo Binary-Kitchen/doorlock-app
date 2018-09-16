@@ -23,5 +23,5 @@ Alternatively, you can download a prebuilt version (apk) in the
 visit
 [binary.kitchen](https://www.binary-kitchen.de/wiki/doku.php?id=projekte:hausautomatisierung:doorlock#software)
 
-## Licence
+## License
 This work is licenced under the GNU General Public License version 3
