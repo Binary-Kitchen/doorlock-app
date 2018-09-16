@@ -2,6 +2,7 @@ package de.binary_kitchen.doorlock_app.doorlock_api;
 
 public enum ApiCommand{
     LOCK("lock"),
+    PRESENT("present"),
     UNLOCK("unlock"),
     STATUS("status");
 
