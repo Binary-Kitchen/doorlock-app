@@ -29,5 +29,4 @@ public class ApiResponse {
     public @SerializedName("err") ApiErrorCode error_code;
     public @SerializedName("msg") String message;
     public @SerializedName("status") DoorState status;
-    public @SerializedName("open") boolean open;
 }

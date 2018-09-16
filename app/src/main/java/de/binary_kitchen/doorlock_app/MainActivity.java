@@ -325,6 +325,11 @@ public class MainActivity extends AppCompatActivity {
         api_request(ApiCommand.UNLOCK);
     }
 
+    public void onPresent(View view)
+    {
+        api_request(ApiCommand.PRESENT);
+    }
+
     public void onLock(View view)
     {
         api_request(ApiCommand.LOCK);
@@ -361,12 +366,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (resp.open) {
-            statusView.setText(R.string.open);
-            logo_set_color(R.color.colorUnlocked);
-        } else {
-            statusView.setText(R.string.closed);
-            logo_set_color(R.color.colorLocked);
+        switch (resp.status)
+        {
+            case Open:
+                statusView.setText(R.string.open);
+                logo_set_color(R.color.colorUnlocked);
+                break;
+            case Present:
+                statusView.setText(R.string.present);
+                logo_set_color(R.color.colorPresent);
+                break;
+            case Closed:
+                statusView.setText(R.string.closed);
+                logo_set_color(R.color.colorLocked);
+                break;
         }
 
         if (issued_command != ApiCommand.STATUS) {

@@ -30,4 +30,5 @@
     <string name="open">Geöffnet</string>
     <string name="closed">Geschlossen</string>
     <string name="err_location_provider">Automatisches WiFi Wechseln temporär deaktiviert aufgrund deaktivierter Lokalisierungsdienste</string>
+    <string name="present">Jemand ist da</string>
 </resources>
