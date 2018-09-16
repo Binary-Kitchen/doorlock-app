@@ -50,5 +50,10 @@
             android:selectable="false"
             android:summary="@string/about"
             android:title="@string/about_title"/>
+        <Preference
+            android:persistent="false"
+            android:selectable="false"
+            android:summary="@string/app_version"
+            android:title="Version"/>
     </PreferenceCategory>
 </PreferenceScreen>

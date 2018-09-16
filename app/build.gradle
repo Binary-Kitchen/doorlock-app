@@ -17,6 +17,10 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.config
+            resValue "string", "app_version", "${defaultConfig.versionName}-release"
+        }
+        debug {
+            resValue "string", "app_version", "${defaultConfig.versionName}-debug"
         }
     }
 }
