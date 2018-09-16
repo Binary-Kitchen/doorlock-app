@@ -14,8 +14,9 @@ Kitchen Hackspace.
 
 ## Where to get
 <a href='https://play.google.com/store/apps/details?id=de.binary_kitchen.doorlock_app'>
-	<img alt='Get it on Google Play' width=175 src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
-</a>
+	<img alt='Get it on Google Play' width=175 src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://f-droid.org/packages/de.binary_kitchen.doorlock_app/'>
+	<img alt='Get it on F-Droid' width=175 src='https://f-droid.org/badge/get-it-on.png'/></a>
 
 Alternatively, you can download a prebuilt version (apk) in the
 [release](https://github.com/Binary-Kitchen/doorlock-app/releases) section or
