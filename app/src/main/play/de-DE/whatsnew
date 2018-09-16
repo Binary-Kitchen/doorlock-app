@@ -1,3 +1,4 @@
-- Deutsche Übersetzung
-- Nutzt die aktualisierte Doorlock API
-- Kleine Änderungen am Design
+- Neues Design des Widget!
+- Debug Modus: FÃ¼r Entwickler unerlÃ¤sslich
+- KompatibilitÃ¤t mit alter und neuer API
+- Kleine Fehlerbehebung: Erkenne automatisch falls Lokalisierungsdienste auf neueren Android Versionen deaktiviert sind

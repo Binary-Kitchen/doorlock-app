@@ -1,3 +1,4 @@
-- German translation
-- Usage of updated doorlock api
-- Minor design fixes
+- New widget design!
+- Debug mode: Only useful for devs
+- Full compatibility mode with old and upcoming API
+- Bugfix: Detect if Location Services are enabled on newer Android versions
