@@ -44,6 +44,13 @@
             android:inputType="text"
             android:title="@string/hostname_title"
             android:defaultValue="lock.binary.kitchen" />
+        <EditTextPreference
+            android:key="spaceapi"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"
+            android:title="@string/spaceapi"
+            android:defaultValue="https://www.binary-kitchen.de/spaceapi.php" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_information">
         <Preference

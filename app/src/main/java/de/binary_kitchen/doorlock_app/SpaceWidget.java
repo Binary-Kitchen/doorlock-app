@@ -19,6 +19,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
 
@@ -35,8 +37,6 @@ import okhttp3.Response;
 
 
 public class SpaceWidget extends AppWidgetProvider {
-    private final Request.Builder request_uri =
-            new Request.Builder().url("https://www.binary-kitchen.de/spaceapi.php");
     private final OkHttpClient client = new OkHttpClient();
     private static boolean open, state_valid;
 
@@ -72,7 +72,14 @@ public class SpaceWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        SharedPreferences prefs;
+        String url_spaceapi;
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        url_spaceapi = prefs.getString("spaceapi", "");
+
         SpaceAPICallback spaceAPICallback = new SpaceAPICallback(context);
+        Request.Builder request_uri = new Request.Builder().url(url_spaceapi);
         Request request = request_uri.get().build();
         client.newCall(request).enqueue(spaceAPICallback);
     }
