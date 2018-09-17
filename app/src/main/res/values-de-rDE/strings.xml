@@ -24,6 +24,7 @@
     <string name="category_credentials">Zugangsdaten</string>
     <string name="category_settings">Einstellungen</string>
     <string name="category_information">Information</string>
+    <string name="category_advanced">Spezialexperteneinstellungen</string>
     <string name="activity_settings_title">Einstellungen</string>
     <string name="activity_main_title">BK Doorlock</string>
     <string name="open">Geöffnet</string>

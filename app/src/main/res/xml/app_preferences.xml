@@ -14,20 +14,12 @@
             android:summaryOff="@string/wifi_switch_summary_off"
             android:summaryOn="@string/wifi_switch_summary_on"
             android:title="@string/wifi_switch_title" />
-        <EditTextPreference
-            android:key="hostname"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:inputType="text"
-            android:title="@string/hostname_title"
-            android:defaultValue="lock.binary.kitchen" />
         <CheckBoxPreference
             android:key="debug"
             android:title="Debug mode"
             android:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_credentials">
-
         <EditTextPreference
             android:key="username"
             android:selectAllOnFocus="true"
@@ -43,6 +35,15 @@
             android:singleLine="true"
             android:title="@string/password"
             android:summary="@string/password_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/category_advanced">
+        <EditTextPreference
+            android:key="hostname"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"
+            android:title="@string/hostname_title"
+            android:defaultValue="lock.binary.kitchen" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_information">
         <Preference
