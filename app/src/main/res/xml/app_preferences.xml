@@ -50,7 +50,7 @@
             android:singleLine="true"
             android:inputType="text"
             android:title="@string/spaceapi"
-            android:defaultValue="https://www.binary-kitchen.de/spaceapi.php" />
+            android:defaultValue="@string/default_spaceapi" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_information">
         <Preference

@@ -36,4 +36,5 @@
     <string name="err_location_provider">WiFi switching temporarily disabled due to missing location services</string>
     <string name="present">Somebody\'s inside</string>
     <string name="spaceapi">Space API URL</string>
+    <string name="default_spaceapi" translatable="false">https://www.binary-kitchen.de/spaceapi.php</string>
 </resources>

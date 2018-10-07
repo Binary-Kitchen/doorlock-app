@@ -77,6 +77,8 @@ public class SpaceWidget extends AppWidgetProvider {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         url_spaceapi = prefs.getString("spaceapi", "");
+        if (url_spaceapi.isEmpty())
+            url_spaceapi = context.getResources().getString(R.string.default_spaceapi);
 
         SpaceAPICallback spaceAPICallback = new SpaceAPICallback(context);
         Request.Builder request_uri = new Request.Builder().url(url_spaceapi);
