@@ -1,4 +1,3 @@
-- Neues Design des Widget!
-- Debug Modus: Für Entwickler unerlässlich
-- Kompatibilität mit alter und neuer API
-- Kleine Fehlerbehebung: Erkenne automatisch falls Lokalisierungsdienste auf neueren Android Versionen deaktiviert sind
+- Neuer Sperrmodus: Present
+- Update auf neue API
+- Kleinere Fixes

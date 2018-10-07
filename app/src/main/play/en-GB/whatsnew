@@ -1,4 +1,3 @@
-- New widget design!
-- Debug mode: Only useful for devs
-- Full compatibility mode with old and upcoming API
-- Bugfix: Detect if Location Services are enabled on newer Android versions
+- New lock state: Present
+- Use new API
+- Minor fixes
