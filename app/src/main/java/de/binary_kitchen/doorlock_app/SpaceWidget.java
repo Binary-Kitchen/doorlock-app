@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -81,9 +82,16 @@ public class SpaceWidget extends AppWidgetProvider {
             url_spaceapi = context.getResources().getString(R.string.default_spaceapi);
 
         SpaceAPICallback spaceAPICallback = new SpaceAPICallback(context);
-        Request.Builder request_uri = new Request.Builder().url(url_spaceapi);
-        Request request = request_uri.get().build();
-        client.newCall(request).enqueue(spaceAPICallback);
+
+        try {
+            Request.Builder request_uri = new Request.Builder().url(url_spaceapi);
+            Request request = request_uri.get().build();
+            client.newCall(request).enqueue(spaceAPICallback);
+        }
+        catch (Exception e) {
+            Toast.makeText(context, R.string.invalid_spaceapi_url,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

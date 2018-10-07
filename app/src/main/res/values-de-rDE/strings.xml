@@ -32,4 +32,5 @@
     <string name="err_location_provider">Automatisches WiFi Wechseln temporär deaktiviert aufgrund deaktivierter Lokalisierungsdienste</string>
     <string name="present">Jemand ist da</string>
     <string name="spaceapi">Space API URL</string>
+    <string name="invalid_spaceapi_url">Ungültige spaceapi URL</string>
 </resources>
