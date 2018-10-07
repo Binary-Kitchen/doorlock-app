@@ -38,4 +38,5 @@
     <string name="spaceapi">Space API URL</string>
     <string name="default_spaceapi" translatable="false">https://www.binary-kitchen.de/spaceapi.php</string>
     <string name="invalid_spaceapi_url">Invalid spaceapi URL</string>
+    <string name="invalid_spaceapi_response">Invalid spaceapi Response</string>
 </resources>

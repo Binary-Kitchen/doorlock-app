@@ -33,4 +33,5 @@
     <string name="present">Jemand ist da</string>
     <string name="spaceapi">Space API URL</string>
     <string name="invalid_spaceapi_url">Ungültige spaceapi URL</string>
+    <string name="invalid_spaceapi_response">Ungültige spaceapi Antwort</string>
 </resources>

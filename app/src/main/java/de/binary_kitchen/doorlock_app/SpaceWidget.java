@@ -135,11 +135,15 @@ public class SpaceWidget extends AppWidgetProvider {
             String json_body;
 
             state_valid = false;
-            if (response.code() == 200) {
-                json_body = response.body().string();
-                JsonObject obj = parser.parse(json_body).getAsJsonObject();
-                open = obj.getAsJsonObject("state").get("open").getAsBoolean();
-                state_valid = true;
+            try {
+                if (response.code() == 200) {
+                    json_body = response.body().string();
+                    JsonObject obj = parser.parse(json_body).getAsJsonObject();
+                    open = obj.getAsJsonObject("state").get("open").getAsBoolean();
+                    state_valid = true;
+                }
+            }
+            catch (Exception e) {
             }
 
             update();
