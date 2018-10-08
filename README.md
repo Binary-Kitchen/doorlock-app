@@ -24,4 +24,4 @@ visit
 [binary.kitchen](https://www.binary-kitchen.de/wiki/doku.php?id=projekte:hausautomatisierung:doorlock#software)
 
 ## License
-This work is licenced under the GNU General Public License version 3
+This work is licenced under the GNU General Public License version 2

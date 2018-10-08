@@ -12,7 +12,7 @@
     <string name="ssid_secure" translatable="false">\"secure.binary-kitchen.de\"</string>
     <string name="ssid_legacy" translatable="false">\"legacy.binary-kitchen.de\"</string>
     <string name="ssid_top_level" translatable="false">.binary-kitchen.de</string>
-    <string name="about" translatable="false">Copyright © Binary Kitchen e.V., 2018\nAuthors:\n  Ralf Ramsauer\n  Thomas Schmid\nLicensed under GPLv3</string>
+    <string name="about" translatable="false">Copyright © Binary Kitchen e.V., 2018\nAuthors:\n  Ralf Ramsauer\n  Thomas Schmid\nLicensed under GPLv2</string>
     <string name="username">Username</string>
     <string name="username_summary">Your Binary-Kitchen username</string>
     <string name="password">Password</string>

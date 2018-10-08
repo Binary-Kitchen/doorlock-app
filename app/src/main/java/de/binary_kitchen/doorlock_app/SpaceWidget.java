@@ -7,7 +7,7 @@
  *  Thomas Schmid <tom@binary-kitchen.de>
  *  Ralf Ramsauer <ralf@binary-kitchen.de>
  *
- * This work is licensed under the terms of the GNU GPL, version 3.  See
+ * This work is licensed under the terms of the GNU GPL, version 2.  See
  * the COPYING file in the top-level directory.
  */
 

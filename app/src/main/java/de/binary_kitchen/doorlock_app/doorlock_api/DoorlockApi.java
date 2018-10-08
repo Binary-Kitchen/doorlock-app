@@ -1,3 +1,16 @@
+/*
+ * Doorlock, Binary Kitchen's Open Sesame
+ *
+ * Copyright (c) Binary Kitchen e.V., 2018
+ *
+ * Authors:
+ *  Ralf Ramsauer <ralf@binary-kitchen.de>
+ *  Thomas Schmid <tom@binary-kitchen.de>
+ *
+ * This work is licensed under the terms of the GNU GPL, version 2.  See
+ * the COPYING file in the top-level directory.
+ */
+
 package de.binary_kitchen.doorlock_app.doorlock_api;
 
 import android.content.Context;
