@@ -38,21 +38,43 @@ import okhttp3.Response;
 
 
 public class SpaceWidget extends AppWidgetProvider {
+    private enum ExtLockState {
+        LOCK("locked"),
+        PRESENT("present"),
+        UNLOCK("unlocked");
+
+        private final String value;
+
+        ExtLockState(final String value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.value;
+        }
+
+        public static ExtLockState fromString(String text)
+        {
+            for (ExtLockState e: ExtLockState.values()) {
+                if (e.value.equals(text)) {
+                    return e;
+                }
+            }
+            return null;
+        }
+    }
+
     private final OkHttpClient client = new OkHttpClient();
-    private static boolean open, state_valid;
+    private static int color = R.color.colorUnknown;
+
 
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                         int appWidgetId)
     {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.space_widget);
-        int color = R.color.colorUnknown;
-
-        if (state_valid)
-            if (open) {
-                color = R.color.colorUnlocked;
-            } else {
-                color = R.color.colorLocked;
-            }
 
         views.setInt(R.id.widgetHeadImageButton,"setColorFilter",
                 ContextCompat.getColor(context, color));
@@ -124,23 +146,37 @@ public class SpaceWidget extends AppWidgetProvider {
         @Override
         public void onFailure(Call call, final IOException e)
         {
-            state_valid = false;
             update();
         }
 
         @Override
         public void onResponse(Call call, Response response) throws IOException
         {
+            ExtLockState lock_state;
             JsonParser parser = new JsonParser();
             String json_body;
 
-            state_valid = false;
             try {
                 if (response.code() == 200) {
                     json_body = response.body().string();
                     JsonObject obj = parser.parse(json_body).getAsJsonObject();
-                    open = obj.getAsJsonObject("state").get("open").getAsBoolean();
-                    state_valid = true;
+                    lock_state = ExtLockState.fromString(
+                            obj.getAsJsonObject("state").get("ext_lockstate").getAsString());
+                    if (lock_state != null) {
+                        switch (lock_state) {
+                            case LOCK:
+                                color = R.color.colorLocked;
+                                break;
+                            case PRESENT:
+                                color = R.color.colorPresent;
+                                break;
+                            case UNLOCK:
+                                color = R.color.colorUnlocked;
+                                break;
+                        }
+                    } else {
+                        color = R.color.colorUnknown;
+                    }
                 }
             }
             catch (Exception e) {
