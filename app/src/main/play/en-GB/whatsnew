@@ -1,3 +1,3 @@
-- New lock state: Present
-- Use new API
-- Minor fixes
+- Support for local authentication method
+- Widget now displays status present
+- Stabilizing widget

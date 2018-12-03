@@ -1,3 +1,3 @@
-- Neuer Sperrmodus: Present
-- Update auf neue API
-- Kleinere Fixes
+- Support für lokale Authentifizierungsmethode
+- Widget zeigt jetzt Status Present an
+- Widget stabilisiert
