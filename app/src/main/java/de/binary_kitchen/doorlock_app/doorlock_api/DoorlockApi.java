@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 
 import de.binary_kitchen.doorlock_app.MainActivity;
+import de.binary_kitchen.doorlock_app.R;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -94,7 +95,7 @@ public class DoorlockApi {
         }
 
         @Override
-        public void onResponse(Call call, Response response) throws IOException
+        public void onResponse(Call call, final Response response) throws IOException
         {
             final ApiCommand issuedCommand;
             final ApiResponse resp;
@@ -102,12 +103,19 @@ public class DoorlockApi {
             Handler handler;
             String json_body;
 
+            handler = new Handler(context.getMainLooper());
+
             if (response.code() != 200) {
-                /* TBD: Low level HTTP error */
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainActivity act = (MainActivity) context;
+                        act.onError(act.getString(R.string.http_error));
+                    }
+                });
                 return;
             }
 
-            handler = new Handler(context.getMainLooper());
             requestBody = (FormBody)call.request().body();
             issuedCommand =  ApiCommand.fromString(requestBody.value(0));
             json_body = response.body().string();
