@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.github.triplet.play'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 33
     defaultConfig {
         applicationId "de.binary_kitchen.doorlock_app"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 33
         versionCode 8
         versionName "2.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
