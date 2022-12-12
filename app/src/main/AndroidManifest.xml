@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/activity_main_title">
+            android:label="@string/activity_main_title"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,7 +33,9 @@
                 android:value=".MainActivity"/>
         </activity>
 
-        <receiver android:name=".SpaceWidget">
+        <receiver
+            android:name=".SpaceWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.SCREEN_ON" />
