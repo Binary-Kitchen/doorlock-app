@@ -50,6 +50,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,7 @@ import static android.net.wifi.WifiManager.WIFI_STATE_UNKNOWN;
 public class MainActivity extends AppCompatActivity {
     private boolean connectivity;
     private DoorlockApi api;
+    private String currentHostname;
     private TextView statusView;
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -92,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
+
+        RadioGroup locationSelector = findViewById(R.id.locationSelector);
+        locationSelector.setOnCheckedChangeListener((group, checkedId) -> {
+            setCurrentHostname(checkedId);
+            createApi();
+        });
 
         button_set_alpha(R.id.Lock, R.color.colorLocked);
         button_set_alpha(R.id.Present, R.color.colorPresent);
@@ -137,13 +145,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume()
-    {
-        String username, password, hostname;
+    protected void onResume() {
+        super.onResume();
+        if (currentHostname == null) {
+            setCurrentHostname(0);
+        }
+        createApi();
+    }
+
+    private void setCurrentHostname(int locationRadioButton) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        switch (locationRadioButton) {
+            case R.id.locationCool:
+                currentHostname = prefs.getString("hostname_auweg", "");
+                break;
+            case R.id.locationMain:
+            default:
+                currentHostname = prefs.getString("hostname", "");
+        }
+    }
+
+    private void createApi() {
+        String username, password;
         SharedPreferences prefs;
         boolean debug;
-
-        super.onResume();
 
         if (!SettingsActivity.check_settings(this)) {
             this.startActivity(new Intent(this, SettingsActivity.class));
@@ -153,12 +178,11 @@ public class MainActivity extends AppCompatActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         username = prefs.getString("username", "");
         password = prefs.getString("password", "");
-        hostname = prefs.getString("hostname", "");
         debug = prefs.getBoolean("debug", false);
 
         sounds_enabled = prefs.getBoolean("soundsEnabled",true);
 
-        api = new DoorlockApi(this, hostname, username, password, debug);
+        api = new DoorlockApi(this, currentHostname, username, password, debug);
 
         connectivity = false;
         if (prefs.getBoolean("wifiSwitchEnabled", false)) {

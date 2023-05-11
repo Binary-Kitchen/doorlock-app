@@ -35,4 +35,6 @@
     <string name="spaceapi">Space API URL</string>
     <string name="invalid_spaceapi_url">Ungültige spaceapi URL</string>
     <string name="invalid_spaceapi_response">Ungültige spaceapi Antwort</string>
+    <string name="location_main">Walderdorfstraße</string>
+    <string name="location_cool">Auweg</string>
 </resources>

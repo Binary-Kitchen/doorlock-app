@@ -25,6 +25,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <RadioGroup
+                android:id="@+id/locationSelector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/locationMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/location_main" />
+
+                <RadioButton
+                    android:id="@+id/locationCool"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/location_cool" />
+            </RadioGroup>
+
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
