@@ -87,7 +87,7 @@ public class SpaceWidget extends AppWidgetProvider {
 
         PendingIntent pendingUpdate = PendingIntent.getBroadcast(
                 context, appWidgetId, intentUpdate,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widgetHeadImageButton, pendingUpdate);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
