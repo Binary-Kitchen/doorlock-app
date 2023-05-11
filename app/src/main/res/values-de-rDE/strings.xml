@@ -15,6 +15,7 @@
     <string name="password_summary">Das passende Passwort</string>
     <string name="about_title">Über</string>
     <string name="hostname_title">Doorlock Hostname</string>
+    <string name="hostname_title_auweg">Auweg Doorlock Hostname</string>
     <string name="wifi_switch_summary_on">Autom. W-Lan Wechsler an</string>
     <string name="wifi_switch_summary_off">Autom. W-Lan Wechsler aus</string>
     <string name="wifi_switch_title">W-Lan Wechsler</string>

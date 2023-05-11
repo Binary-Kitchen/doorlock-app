@@ -45,6 +45,13 @@
             android:title="@string/hostname_title"
             android:defaultValue="lock.binary.kitchen" />
         <EditTextPreference
+            android:key="hostname_auweg"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="text"
+            android:title="@string/hostname_title_auweg"
+            android:defaultValue="lock-auweg.binary.kitchen" />
+        <EditTextPreference
             android:key="spaceapi"
             android:selectAllOnFocus="true"
             android:singleLine="true"
