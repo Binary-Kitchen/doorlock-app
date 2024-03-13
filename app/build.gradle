@@ -24,6 +24,7 @@ android {
             applicationIdSuffix ".dev"
         }
     }
+    namespace 'de.binary_kitchen.doorlock_app'
 }
 
 dependencies {
