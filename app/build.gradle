@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.github.triplet.play'
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "de.binary_kitchen.doorlock_app"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 9
         versionName "2.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,7 +31,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'com.takisoft.fix:preference-v7:27.1.1.1'
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
