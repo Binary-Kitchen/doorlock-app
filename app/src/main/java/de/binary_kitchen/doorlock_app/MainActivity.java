@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private final static int POS_PERM_REQUEST = 0;
 
-    private ScanReceiver scanReceiver;
     private WifiReceiver broadcastReceiver;
 
     private boolean sounds_enabled;
@@ -182,10 +181,6 @@ public class MainActivity extends AppCompatActivity {
 
                     if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
                             wifi_state == WIFI_STATE_UNKNOWN) {
-                        scanReceiver = new ScanReceiver();
-                        IntentFilter ifilter = new IntentFilter();
-                        ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-                        registerReceiver(scanReceiver, ifilter);
                         wifiManager.setWifiEnabled(true);
                     }
                 }
@@ -201,11 +196,6 @@ public class MainActivity extends AppCompatActivity {
     public void onPause()
     {
         super.onPause();
-
-        if (scanReceiver != null) {
-            unregisterReceiver(scanReceiver);
-            scanReceiver = null;
-        }
 
         if (broadcastReceiver != null) {
             unregisterReceiver(broadcastReceiver);
@@ -405,14 +395,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public class ScanReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            unregisterReceiver(scanReceiver);
-            scanReceiver = null;
         }
     }
 
