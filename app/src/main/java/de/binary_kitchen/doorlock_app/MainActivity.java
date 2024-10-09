@@ -146,7 +146,27 @@ public class MainActivity extends AppCompatActivity {
 
         api = new DoorlockApi(this, hostname, username, password, debug);
 
-        connectivity = true;
+        connectivity = false;
+        WifiManager wifiManager;
+        int wifi_state;
+        String ssid;
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        wifi_state = wifiManager.getWifiState();
+
+        if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
+                wifi_state == WIFI_STATE_UNKNOWN) {
+            Toast.makeText(this, R.string.wifi_state_error, Toast.LENGTH_SHORT).show();
+
+        } else {
+            /* Are we already connected to some kitchen network? */
+            ssid = wifiManager.getConnectionInfo().getSSID();
+            if (is_ssid_valid(ssid)) {
+                connectivity = true;
+            } else {
+                Toast.makeText(this, R.string.wifi_connection_error, Toast.LENGTH_SHORT).show();
+            }
+        }
 
         update_status();
     }
