@@ -13,35 +13,26 @@
 
 package de.binary_kitchen.doorlock_app;
 
-import android.Manifest;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView statusView;
     private ImageView logo;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private final static int POS_PERM_REQUEST = 0;
 
     private WifiReceiver broadcastReceiver;
 
@@ -156,38 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
         api = new DoorlockApi(this, hostname, username, password, debug);
 
-        connectivity = false;
-        if (prefs.getBoolean("wifiSwitchEnabled", false)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O  &&
-                    ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, POS_PERM_REQUEST);
-            } else {
-                WifiManager wifiManager;
-                LocationManager lm;
-                int wifi_state;
-
-                lm =  (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                        !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    Toast.makeText(this, R.string.err_location_provider,
-                            Toast.LENGTH_LONG).show();
-                    connectivity = true;
-                } else {
-                    wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-                    wifi_state = wifiManager.getWifiState();
-
-                    if (wifi_state == WIFI_STATE_DISABLED || wifi_state == WIFI_STATE_DISABLING ||
-                            wifi_state == WIFI_STATE_UNKNOWN) {
-                        wifiManager.setWifiEnabled(true);
-                    }
-                }
-            }
-        } else {
-            connectivity = true;
-        }
+        connectivity = true;
 
         update_status();
     }
@@ -200,50 +159,6 @@ public class MainActivity extends AppCompatActivity {
         if (broadcastReceiver != null) {
             unregisterReceiver(broadcastReceiver);
             broadcastReceiver = null;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        final Context ctx = this;
-        final SharedPreferences prefs;
-        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-
-        switch(requestCode) {
-            case POS_PERM_REQUEST:
-                if (!(grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    AlertDialog.Builder dialog;
-
-                    prefs.edit().putBoolean("wifiSwitchEnabled", false).apply();
-
-                    dialog = new AlertDialog.Builder(new ContextThemeWrapper(
-                            this, R.style.Theme_AppCompat_Light_Dialog_Alert));
-                    dialog.setMessage(R.string.dialog_wifi_access);
-                    dialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            prefs.edit().putBoolean("wifiSwitchEnabled", true).apply();
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                                return;
-                            requestPermissions(
-                                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                    POS_PERM_REQUEST);
-                        }
-                    });
-                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        }
-                    });
-
-                    dialog.show();
-                }
         }
     }
 

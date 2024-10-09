@@ -8,7 +8,6 @@ Kitchen Hackspace.
 
 - Simple (un-)locking of the main entrance
 - Storage of credentials
-- Automatic WiFi switching (requires coarse location settings for Android 8+)
 - The space widget remotely shows the lock state of the hackspace. A click on
   the button will update it.
 
