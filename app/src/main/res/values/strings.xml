@@ -4,9 +4,7 @@
     <string name="unlock">Unlock</string>
     <string name="lock">Lock</string>
     <string name="kitchen_status">Kitchen Status</string>
-    <string name="out_of_range">Couldn\'t find valid WiFi. Maybe kitchen out of range?</string>
     <string name="no_connectivity">Error: No connectivity</string>
-    <string name="dialog_wifi_access">To read the SSID of WiFis the app needs location information.</string>
     <string name="message_invalid_credentials">Please enter valid credentials</string>
     <string name="ssid_secure" translatable="false">\"secure.binary-kitchen.de\"</string>
     <string name="ssid_legacy" translatable="false">\"legacy.binary-kitchen.de\"</string>
@@ -18,9 +16,6 @@
     <string name="password_summary">The corresponding password</string>
     <string name="about_title">About</string>
     <string name="hostname_title">Doorlock hostname</string>
-    <string name="wifi_switch_summary_on">Autom. Wifi Switch enabled</string>
-    <string name="wifi_switch_summary_off">Autom. Wifi Switch disabled</string>
-    <string name="wifi_switch_title">WiFi Switch</string>
     <string name="sound_switch_title">Sound</string>
     <string name="sounds_enabled">Sounds enabled</string>
     <string name="sounds_disabled">Sounds disabled</string>
@@ -32,7 +27,6 @@
     <string name="activity_main_title">BK Doorlock</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
-    <string name="err_location_provider">WiFi switching temporarily disabled due to missing location services</string>
     <string name="present">Somebody\'s inside</string>
     <string name="spaceapi">Space API URL</string>
     <string name="default_spaceapi" translatable="false">https://www.binary-kitchen.de/spaceapi.php</string>

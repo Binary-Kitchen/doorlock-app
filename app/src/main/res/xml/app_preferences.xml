@@ -8,12 +8,6 @@
             android:summaryOff="@string/sounds_disabled"
             android:summaryOn="@string/sounds_enabled"
             android:title="@string/sound_switch_title" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="wifiSwitchEnabled"
-            android:summaryOff="@string/wifi_switch_summary_off"
-            android:summaryOn="@string/wifi_switch_summary_on"
-            android:title="@string/wifi_switch_title" />
         <CheckBoxPreference
             android:key="debug"
             android:title="Debug mode"
