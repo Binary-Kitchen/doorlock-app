@@ -5,7 +5,6 @@
     <string name="lock">Lock</string>
     <string name="kitchen_status">Kitchen Status</string>
     <string name="out_of_range">Couldn\'t find valid WiFi. Maybe kitchen out of range?</string>
-    <string name="unable_to_connect">Unable to connect: Kitchen WiFi not configured</string>
     <string name="no_connectivity">Error: No connectivity</string>
     <string name="dialog_wifi_access">To read the SSID of WiFis the app needs location information.</string>
     <string name="message_invalid_credentials">Please enter valid credentials</string>

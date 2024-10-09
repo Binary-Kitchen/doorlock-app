@@ -30,8 +30,6 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -54,7 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
 
 import de.binary_kitchen.doorlock_app.doorlock_api.ApiCommand;
@@ -190,8 +187,6 @@ public class MainActivity extends AppCompatActivity {
                         ifilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
                         registerReceiver(scanReceiver, ifilter);
                         wifiManager.setWifiEnabled(true);
-                    } else {
-                        switch_wifi();
                     }
                 }
             }
@@ -394,73 +389,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void switch_wifi() {
-        List<WifiConfiguration> configured_networks;
-        List<ScanResult> scan_results;
-        WifiManager wifiManager;
-        boolean in_range;
-        String ssid;
-
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new WifiReceiver();
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(broadcastReceiver, intentFilter);
-        }
-
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-
-        /* Are we already connected to some kitchen network? */
-        ssid = wifiManager.getConnectionInfo().getSSID();
-        if (is_ssid_valid(ssid)) {
-            connectivity = true;
-            return;
-        }
-
-        /* Let's see if any kitchen network is actually in range */
-        in_range = false;
-        scan_results = wifiManager.getScanResults();
-        if (scan_results != null)
-            for (ScanResult scan_result: scan_results)
-                if (scan_result.SSID.contains(getString(R.string.ssid_top_level))) {
-                    in_range = true;
-                    break;
-                }
-
-        if (!in_range) {
-            Toast.makeText(this, R.string.out_of_range, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        configured_networks = wifiManager.getConfiguredNetworks();
-        if (configured_networks == null)
-            return;
-
-        /*
-         * First step: search if user has secure.binary.kitchen configured. Prefer this network over
-         * others
-         */
-        for (WifiConfiguration networkConf: configured_networks)
-            if (networkConf.SSID.equals(getString(R.string.ssid_secure))) {
-                wifiManager.disconnect();
-                wifiManager.enableNetwork(networkConf.networkId, true);
-                wifiManager.reconnect();
-                return;
-            }
-
-
-        /* Second step: Fall back to legacy.binary.kitchen */
-        for (WifiConfiguration networkConf: configured_networks)
-            if (networkConf.SSID.equals(getString(R.string.ssid_legacy))) {
-                wifiManager.disconnect();
-                wifiManager.enableNetwork(networkConf.networkId, true);
-                wifiManager.reconnect();
-                return;
-            }
-
-        Toast.makeText(this, R.string.unable_to_connect, Toast.LENGTH_LONG).show();
-    }
-
     private boolean is_ssid_valid(String ssid)
     {
         return ssid != null
@@ -483,7 +411,6 @@ public class MainActivity extends AppCompatActivity {
     public class ScanReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch_wifi();
             unregisterReceiver(scanReceiver);
             scanReceiver = null;
         }

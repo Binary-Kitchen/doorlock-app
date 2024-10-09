@@ -5,7 +5,6 @@
     <string name="lock">Zusperren</string>
     <string name="kitchen_status">Kitchen Status</string>
     <string name="out_of_range">Konnte kein passendes W-Lan finden. Kitchen außer Reichweite?</string>
-    <string name="unable_to_connect">Konnte nicht verbinden. Kitchen W-Lan ist nicht konfiguriert</string>
     <string name="no_connectivity">Fehler: Keine Verbindung</string>
     <string name="dialog_wifi_access">Um auf den Namen von W-Lan Verbindungen zugreifen zu können, benötigt die App zugriff auf deine Position.</string>
     <string name="message_invalid_credentials">Bitte korrekte Zugangsdaten eingeben</string>
