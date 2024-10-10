@@ -7,7 +7,7 @@ android {
         applicationId "de.binary_kitchen.doorlock_app"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 10
+        versionCode 11
         versionName "2.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
