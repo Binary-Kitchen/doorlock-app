@@ -33,6 +33,4 @@
     <string name="invalid_spaceapi_url">Invalid spaceapi URL</string>
     <string name="invalid_spaceapi_response">Invalid spaceapi Response</string>
     <string name="http_error">Low level doorlock error</string>
-    <string name="wifi_state_error">Wifi disabled or not available</string>
-    <string name="wifi_connection_error">Not connected to Binary Kitchen Wifi network</string>
 </resources>

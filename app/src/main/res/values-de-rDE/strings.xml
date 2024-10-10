@@ -27,7 +27,4 @@
     <string name="spaceapi">Space API URL</string>
     <string name="invalid_spaceapi_url">Ungültige spaceapi URL</string>
     <string name="invalid_spaceapi_response">Ungültige spaceapi Antwort</string>
-    <string name="wifi_state_error">WLAN deaktiviert oder nicht verfügbar</string>
-    <string name="wifi_connection_error">Nicht mit dem Binary Kitchen-WLAN verbunden</string>
-
 </resources>
